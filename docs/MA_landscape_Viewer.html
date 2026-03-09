@@ -525,12 +525,12 @@ const LAYERS = [
 ];
 
 // Default selections (layer id strings)
-const DEFAULT_LEFT  = "lidar_elev_relief";
+const DEFAULT_LEFT  = "ortho_1990s";
 const DEFAULT_RIGHT = "ortho_2023";
 
 // Study area: Princeton, MA
 const CENTER = [-71.900587238555, 42.469347418314136];
-const ZOOM   = 14;
+const ZOOM   = 15;
 
 // MassGIS parcel overlay — two options tried in order:
 //
@@ -856,6 +856,9 @@ document.getElementById("parcel-btn").addEventListener("click", toggleParcels);
 function boot() {
   switchLayer("L", DEFAULT_LEFT);
   switchLayer("R", DEFAULT_RIGHT);
+  
+  // Turn parcels on automatically when the map loads
+  toggleParcels();
 
   // Hide loading screen
   const loading = document.getElementById("loading");
