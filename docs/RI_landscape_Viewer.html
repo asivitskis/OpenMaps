@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MA Coastline Viewer</title>
+  <title>RI Landscape Viewer</title>
 
   <!-- MapLibre GL JS — loaded from CDN, no install needed -->
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
@@ -14,21 +14,22 @@
   <style>
     /* ── Reset & tokens ───────────────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    
-    /* Deep Tide palette — variable names retained from original forest theme */
+
     :root {
-  --bark:      #0d1a1f;   /* deep ocean black-blue (was dark bark) */
-  --moss:      #112830;   /* abyssal teal-dark (was forest moss) */
-  --lichen:    #1e4d5c;   /* dark reef teal (was lichen green) */
-  --sage:      #5a8fa0;   /* slate-blue mid (was sage green) */
-  --fern:      #7ab8cc;   /* coastal sky blue (was fern green) */
-  --cream:     #e4eef0;   /* sea-foam off-white (was parchment cream) */
-  --parchment: #a8c4cc;   /* weathered nautical grey-blue */
-  --amber:     #e0a030;   /* buoy amber — keep for warnings/active states */
-  --rust:      #c05020;   /* barnacle rust — keep for alerts */
-  --divider-l: #2a9d6e;   /* seagrass green (left pane) */
-  --divider-r: #2979b8;   /* deep water blue (right pane) */
-  }
+      --bark:      #1a1a14;
+      --moss:      #2a3320;
+      --lichen:    #3d4f2e;
+      --sage:      #6b7f52;
+      --fern:      #8fa96b;
+      --cream:     #e8e4d4;
+      --parchment: #c9c2a8;
+      --amber:     #c8922a;
+      --rust:      #8b4513;
+      --divider-l: #6b9e3a;
+      --divider-r: #3a7ab5;
+      --font-body: Arial, Helvetica, sans-serif;
+      --font-mono: Arial, Helvetica, sans-serif;
+    }
 
     html, body {
       height: 100%;
@@ -390,8 +391,8 @@
   <!-- ── Header ─────────────────────────────────────────────────── -->
   <div id="header">
     <div id="brand">
-      <span id="brand-title">MA Coastline Viewer</span>
-      <span id="brand-sub">MapLibre GL JS · MassGIS</span>
+      <span id="brand-title">RI Landscape Viewer</span>
+      <span id="brand-sub">MapLibre GL JS · RIGIS</span>
     </div>
 
     <div id="controls">
@@ -457,75 +458,81 @@
 //  The massgis() helper builds the standard MassGIS tile URL pattern.
 // ═══════════════════════════════════════════════════════════════════
 
-function massgis(serviceName) {
-  return `https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/${serviceName}/MapServer/tile/{z}/{y}/{x}`;
+// Helper: build a RIGIS ArcGIS ImageServer tile URL
+function rigis(servicePath) {
+  return `https://maps.edc.uri.edu/rigis/rest/services/${servicePath}/ImageServer/tile/{z}/{y}/{x}`;
+}
+
+// Helper: build a RIGIS ArcGIS MapServer tile URL
+function rigisMap(servicePath) {
+  return `https://maps.edc.uri.edu/rigis/rest/services/${servicePath}/MapServer/tile/{z}/{y}/{x}`;
+}
+
+// Helper: build an Atlas/ArcGIS Online tile URL (historical imagery)
+function atlas(serviceName) {
+  return `https://tiles.arcgis.com/tiles/S8zZg9pg23JUEexQ/arcgis/rest/services/${serviceName}/MapServer/tile/{z}/{y}/{x}`;
+}
+
+// Helper: build a RIGIS WMS URL
+function rigisWMS(servicePath, layerName) {
+  const base = `https://maps.edc.uri.edu/rigis/services/${servicePath}/ImageServer/WMSServer`;
+  return (
+    `${base}?service=WMS&request=GetMap&version=1.3.0` +
+    `&layers=${layerName}&styles=default&format=image/png` +
+    `&transparent=true&crs=EPSG:3857` +
+    `&bbox={bbox-epsg-3857}&width=256&height=256`
+  );
+}
+// Helper: Lidar
+function rigisExport(servicePath) {
+  const base = `https://maps.edc.uri.edu/rigis/rest/services/${servicePath}/ImageServer/exportImage`;
+  return (
+    `${base}?f=image&format=png` +
+    `&bboxSR=3857&imageSR=3857` +
+    `&bbox={bbox-epsg-3857}` +
+    `&size=256,256`
+  );
 }
 
 const LAYERS = [
-  // ── LiDAR ────────────────────────────────────────────────────────
+  // ── Elevation ────────────────────────────────────────
   {
-    id:          "lidar_elev_relief",
-    name:        "LiDAR — Elevation + Shaded Relief (2013–2021)",
-    group:       "LiDAR",
-    url:         massgis("Elevation_and_ShadedRelief_from_Lidar_2013to2021"),
-    attribution: "MassGIS — LiDAR Terrain 2013–2021",
-    // Stone walls, old roads, skid trails, terrain hidden under canopy
+  id:          "lidar_2022",
+  name:        "LiDAR Shaded Relief — 2022",
+  group:       "Topography",
+  url:         rigisExport("TOPO/RI_202203_Lidar_Shaded_Relief"),
+  attribution: "RIGIS — 2022 LiDAR Shaded Relief",
   },
-  {
-    id:          "lidar_shaded",
-    name:        "LiDAR — Shaded Relief only",
-    group:       "LiDAR",
-    url:         massgis("LiDAR_ShadedRelief"),
-    attribution: "MassGIS — LiDAR Shaded Relief",
-    // Higher contrast for tracing stand boundaries
-  },
-
-  // ── Current aerial imagery ────────────────────────────────────────
-  {
-    id:          "ortho_2023",
-    name:        "Aerial — 2023 (15 cm, leaf-off)",
-    group:       "Aerial",
-    url:         massgis("orthos2023"),
-    attribution: "MassGIS — 2023 Color Ortho Imagery",
-  },
-  {
-    id:          "ortho_2021",
-    name:        "Aerial — 2021 (15 cm, leaf-off)",
-    group:       "Aerial",
-    url:         massgis("orthos2021"),
-    attribution: "MassGIS — 2021 Color Ortho Imagery",
-  },
-  {
-    id:          "ortho_2019",
-    name:        "Aerial — 2019 (15 cm, color)",
-    group:       "Aerial",
-    url:         massgis("USGS_Orthos_2019"),
-    attribution: "MassGIS / USGS — 2019 Color Ortho Imagery",
-  },
-  {
-    id:          "ortho_2013",
-    name:        "Aerial — 2013/2014 (30 cm, color)" ,
-    group:       "Aerial",
-    url:         massgis("USGS_Orthos_2013_2014"),
-    attribution: "MassGIS / USGS — 2013/2014 Color Ortho Imagery",
-  },
-  {
-    id:          "ortho_2011",
-    name:        "Aerial — 2011/2012 (30 cm, color)",
-    group:       "Aerial",
-    url:         massgis("DigitalGlobe_2011_2012"),
-    attribution: "MassGIS — 2011/2012 DigitalGlobe Imagery",
-  },
-  
 
   // ── Historical aerial ─────────────────────────────────────────────
   {
-    id:          "ortho_1990s",
-    name:        "Aerial — 1990s B&W (baseline)",
+    id:          "ortho_2025",
+    name:        "Aerial — 2025 (3in)",
+    group:       "Current",
+    url:         rigisWMS("IMG/RI_202511_RGB_3in_web", "RI_202511_RGB_3in_web"),
+    attribution: "RIGIS — 2025 RI Aerial Imagery (3-inch)",
+    tileSize:    256,   // optional — WMS always uses 256; your loader can read this
+  },
+  {
+    id:          "ortho_2008",
+    name:        "Aerial — 2008",
     group:       "Historical",
-    url:         massgis("BW_Orthos_Tile_Package"),
-    attribution: "MassGIS — 1990s Black & White Ortho Imagery",
-    // Reveals former pastures, fields, early-seral stands now forested
+    url:         atlas("atlas_img_2008"),
+    attribution: "RI Atlas — 2008 Aerial Imagery",
+  },
+  {
+    id:          "ortho_1988",
+    name:        "Aerial — 1988",
+    group:       "Historical",
+    url:         atlas("atlas_img_1988"),
+    attribution: "RI Atlas — 1988 Aerial Imagery",
+  },
+  {
+    id:          "ortho_1972",
+    name:        "Aerial — 1972",
+    group:       "Historical",
+    url:         atlas("atlas_img_1972"),
+    attribution: "RI Atlas — 1972 Aerial Imagery",
   },
 
   // ── Basemaps ──────────────────────────────────────────────────────
@@ -539,34 +546,17 @@ const LAYERS = [
 ];
 
 // Default selections (layer id strings)
-const DEFAULT_LEFT  = "ortho_1990s";
-const DEFAULT_RIGHT = "ortho_2023";
+const DEFAULT_LEFT  = "ortho_1972";
+const DEFAULT_RIGHT = "ortho_2025";
 
-// Study area: Lobsterville Beach Aquinnah, MA
-const CENTER = [-70.80114530623028, 41.35405623704238];
-const ZOOM   = 15;
+// Study area: Providence, RI (center of state)
+const CENTER = [-71.4128, 41.8240];
+const ZOOM   = 13;
 
-// MassGIS parcel overlay — two options tried in order:
-//
-// OPTION A: MassGIS cached tile service (same pattern as imagery layers).
-//   Fast, no CORS issues, but renders parcel boundaries only (no attributes).
-//   Service name confirmed via MassGIS ArcGIS Online data hub.
-const PARCEL_TILE_URL = massgis("MassGIS_Level3_Parcels");
-
-// OPTION B: MassGIS GeoServer WMS — confirmed base URL from MassGIS wiki.
-//   Layer name: massgis:GISDATA.L3_TAXPAR_POLY  (Level 3 standardized parcels)
-//   May be blocked by CORS in some browsers; tile service above is preferred.
-const PARCEL_WMS_URL =
-  "http://giswebservices.massgis.state.ma.us/geoserver/wms?" +
-  "SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap" +
-  "&LAYERS=massgis:GISDATA.L3_TAXPAR_POLY" +
-  "&FORMAT=image/png&TRANSPARENT=true&STYLES=" +
-  "&WIDTH=256&HEIGHT=256&SRS=EPSG:3857" +
-  "&BBOX={bbox-epsg-3857}";
-
-// We use the tile service by default (faster, no CORS risk).
-// Swap to PARCEL_WMS_URL if you need WMS-specific behaviour.
-const PARCEL_URL = PARCEL_TILE_URL;
+// RIGIS parcel overlay via WMS
+// RI E-911 / Statewide Parcel layer served by RIGIS GeoServer
+const PARCEL_URL =
+  "https://maps.edc.uri.edu/rigis/rest/services/PlanningCadastre/RI_Parcels_2024/MapServer/tile/{z}/{y}/{x}";
 
 // ═══════════════════════════════════════════════════════════════════
 //  MAP INITIALISATION
@@ -593,15 +583,10 @@ function makeMap(containerId) {
 const mapL = makeMap("map-left");
 const mapR = makeMap("map-right");
 
-//import MeasuresControl from 'maplibre-gl-measures';
-
 // Navigation controls on the left map only (they're synced)
 mapL.addControl(new maplibregl.NavigationControl(), "top-left");
-mapL.addControl(new MeasuresControl(), 'top-left');
 mapL.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 mapR.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
-
-
 
 // ── Map sync ─────────────────────────────────────────────────────────
 // When one map moves, silently move the other to match
@@ -726,7 +711,7 @@ function addLayerToMap(map, layerDef, side) {
     map.addSource(sid, {
       type:        "raster",
       tiles:       [layerDef.url],
-      tileSize:    256,
+      tileSize:    layerDef.tileSize ?? 256,
       attribution: layerDef.attribution || "",
     });
   }
@@ -792,7 +777,7 @@ function addParcelLayer(map, side) {
       type:        "raster",
       tiles:       [PARCEL_URL],
       tileSize:    256,
-      attribution: "MassGIS — Level 3 Property Tax Parcels",
+      attribution: "RIGIS — Rhode Island Statewide Parcels",
     });
   }
   if (!map.getLayer(lid)) {
@@ -953,10 +938,6 @@ window.addEventListener("touchmove", e => {
 }, { passive: false });
 
 window.addEventListener("touchend", () => { dragging = false; });
-</script>
-<script type="module">
-  import { MeasuresControl } from 'https://unpkg.com/maplibre-gl-measures@0.0.20/dist/maplibre-gl-measures.js';
-  mapL.addControl(new MeasuresControl(), 'top-left');
 </script>
 </body>
 </html>
