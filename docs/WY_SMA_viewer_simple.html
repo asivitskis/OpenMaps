@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Wyoming Surface Management Agency</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" />
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script src="https://unpkg.com/pmtiles@3.2.0/dist/pmtiles.js"></script>
+  <style>
+    body { margin: 0; padding: 0; }
+    #map { width: 100vw; height: 100vh; }
+    #legend {
+      position: absolute;
+      bottom: 30px;
+      right: 10px;
+      background: rgba(255,255,255,0.92);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: sans-serif;
+      font-size: 12px;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      line-height: 1.8;
+    }
+    #legend h4 { margin: 0 0 8px 0; font-size: 13px; }
+    .legend-item { display: flex; align-items: center; gap: 8px; }
+    .legend-swatch {
+      width: 16px; height: 16px; border-radius: 3px;
+      border: 1px solid rgba(0,0,0,0.2); flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+<div id="map"></div>
+<div id="legend">
+  <h4>Surface Management</h4>
+</div>
+
+<script>
+  const protocol = new pmtiles.Protocol();
+  maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol));
+
+  const map = new maplibregl.Map({
+    container: "map",
+    style: "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+    center: [-107.5, 43.0],
+    zoom: 6
+  });
+
+  const colorMapping = {
+    "Bankhead Jones":                     "rgba(252, 205, 207, 1)",
+    "Bureau of Land Management":          "rgba(254, 230, 121, 1)",
+    "Bureau of Reclamation":              "rgba(255, 255, 179, 1)",
+    "Corps of Engineers":                 "rgba(251, 180, 206, 1)",
+    "Department of Agriculture":          "rgba(228, 196, 159, 1)",
+    "Department of Defense":              "rgba(251, 180, 206, 1)",
+    "Department of Energy":               "rgba(228, 196, 159, 1)",
+    "Department of Veterans Affairs":     "rgba(228, 196, 159, 1)",
+    "Federal Aviation Administration":    "rgba(228, 196, 159, 1)",
+    "Fish & Wildlife Service":            "rgba(127, 204, 167, 1)",
+    "Forest Service":                     "rgba(204, 235, 197, 1)",
+    "General Services Administration":    "rgba(228, 196, 159, 1)",
+    "Local Government":                   "rgba(143, 181, 190, 1)",
+    "National Grasslands":                "rgba(230, 245, 177, 1)",
+    "National Park Service":              "rgba(202, 189, 220, 1)",
+    "Wind River Indian Reservation":      "rgba(253, 180, 108, 1)",
+    "Private":                            "rgba(212, 208, 200, 0)",
+    "State":                              "rgba(179, 227, 238, 1)",
+    "State (State Parks & Hist Sites)":   "rgba(102, 153, 205, 1)",
+    "State (University of Wyoming)":      "rgba(0,   76,  115, 1)",
+    "State (Wyoming Game & Fish)":        "rgba(68,  101, 137, 1)",
+    "Water":                              "rgba(0,  197, 255, 1)"
+  };
+
+  function buildMatchExpression(property, colorMap, defaultColor = "#cccccc") {
+    const expr = ["match", ["get", property]];
+    for (const [key, value] of Object.entries(colorMap)) {
+      expr.push(key, value);
+    }
+    expr.push(defaultColor);
+    return expr;
+  }
+
+  function buildLegend(colorMap) {
+    const legend = document.getElementById("legend");
+    for (const [label, color] of Object.entries(colorMap)) {
+      if (label === "Private") continue;
+      const item = document.createElement("div");
+      item.className = "legend-item";
+      item.innerHTML = `
+        <div class="legend-swatch" style="background:${color}"></div>
+        <span>${label}</span>
+      `;
+      legend.appendChild(item);
+    }
+  }
+
+  map.on("load", () => {
+    map.addSource("blm-sma", {
+      type: "vector",
+      url: "pmtiles://https://raw.githubusercontent.com/asivitskis/wy_surface_land_management/main/wy_blm_sma.pmtiles"
+    });
+
+    map.addLayer({
+      id: "blm-sma-fill",
+      type: "fill",
+      source: "blm-sma",
+      "source-layer": "surface_mgmt",
+      paint: {
+        "fill-color": buildMatchExpression("SURFACE", colorMapping),
+        "fill-opacity": 0.75
+      }
+    });
+
+    map.addLayer({
+      id: "blm-sma-outline",
+      type: "line",
+      source: "blm-sma",
+      "source-layer": "surface_mgmt",
+      paint: {
+        "line-color": "rgba(0,0,0,0.15)",
+        "line-width": 0.5
+      }
+    });
+
+    const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false });
+
+    map.on("mousemove", "blm-sma-fill", (e) => {
+      map.getCanvas().style.cursor = "pointer";
+      const props = e.features[0].properties;
+      popup.setLngLat(e.lngLat)
+        .setHTML(`<strong>${props.SURFACE}</strong>`)
+        .addTo(map);
+    });
+
+    map.on("mouseleave", "blm-sma-fill", () => {
+      map.getCanvas().style.cursor = "";
+      popup.remove();
+    });
+
+    buildLegend(colorMapping);
+  });
+
+  map.addControl(new maplibregl.NavigationControl(), "top-right");
+</script>
+</body>
+</html>
