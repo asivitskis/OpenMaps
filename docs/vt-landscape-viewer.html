@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VT Landscape Viewer</title>
+
+  <!-- MapLibre GL JS — loaded from CDN, no install needed -->
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <link  href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+
+  <!-- System fonts only — no external font dependency -->
+
+  <style>
+    /* ── Reset & tokens ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bark:      #1a1a14;
+      --moss:      #2a3320;
+      --lichen:    #3d4f2e;
+      --sage:      #6b7f52;
+      --fern:      #8fa96b;
+      --cream:     #e8e4d4;
+      --parchment: #c9c2a8;
+      --amber:     #c8922a;
+      --rust:      #8b4513;
+      --divider-l: #6b9e3a;
+      --divider-r: #3a7ab5;
+      --font-body: Arial, Helvetica, sans-serif;
+      --font-mono: Arial, Helvetica, sans-serif;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bark);
+      color: var(--cream);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+
+    /* ── App shell ────────────────────────────────────────────────── */
+    #app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ── Header ───────────────────────────────────────────────────── */
+    #header {
+      background: var(--moss);
+      border-bottom: 2px solid var(--lichen);
+      padding: 0 16px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      gap: 12px;
+    }
+
+    #brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    #brand-title {
+      font-family: var(--font-body);
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--cream);
+      letter-spacing: 0.3px;
+    }
+
+    #brand-sub {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--sage);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── Controls row ─────────────────────────────────────────────── */
+    #controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .ctrl-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .ctrl-label {
+      font-family: var(--font-mono);
+      font-size: 9px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--sage);
+    }
+
+    select {
+      background: var(--bark);
+      border: 1px solid var(--lichen);
+      color: var(--cream);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 5px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      outline: none;
+      min-width: 200px;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7f52'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 8px center;
+      padding-right: 24px;
+    }
+
+    select:focus { border-color: var(--fern); }
+    .select-left  { border-left: 3px solid var(--divider-l); }
+    .select-right { border-left: 3px solid var(--divider-r); }
+
+    /* Parcel toggle */
+    #parcel-toggle-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    #parcel-btn {
+      background: var(--bark);
+      border: 1px solid var(--lichen);
+      color: var(--sage);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    #parcel-btn.active {
+      background: var(--lichen);
+      border-color: var(--fern);
+      color: var(--fern);
+    }
+
+    /* ── Search bar (in header) ───────────────────────────────────── */
+    #search-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 240px;
+      flex-shrink: 0;
+    }
+
+    #search-input {
+      width: 100%;
+      background: var(--bark);
+      border: 1px solid var(--lichen);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-size: 12px;
+      padding: 6px 32px 6px 10px;
+      border-radius: 4px;
+      outline: none;
+    }
+
+    #search-input:focus { border-color: var(--fern); }
+    #search-input::placeholder { color: var(--sage); }
+
+    #search-icon {
+      position: absolute;
+      right: 9px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--sage);
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    #search-results {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(26, 26, 20, 0.98);
+      border: 1px solid var(--lichen);
+      border-top: none;
+      border-radius: 0 0 4px 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      display: none;
+      z-index: 200;
+    }
+
+    .search-result-item {
+      padding: 7px 12px;
+      font-family: var(--font-body);
+      font-size: 12px;
+      color: var(--cream);
+      cursor: pointer;
+      border-bottom: 1px solid var(--moss);
+    }
+
+    .search-result-item:hover { background: var(--moss); color: var(--fern); }
+    .search-result-item:last-child { border-bottom: none; }
+
+    /* ── Map area ─────────────────────────────────────────────────── */
+    #map-wrap {
+      position: relative;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    #map-left, #map-right {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* ── Side labels ──────────────────────────────────────────────── */
+    .side-label {
+      position: absolute;
+      bottom: 36px;
+      z-index: 10;
+      pointer-events: none;
+      background: rgba(26, 26, 20, 0.82);
+      border: 1px solid var(--lichen);
+      padding: 4px 11px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      color: var(--cream);
+      backdrop-filter: blur(3px);
+      max-width: 240px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #label-left  { left: 12px;  border-left: 3px solid var(--divider-l); }
+    #label-right { right: 12px; border-left: 3px solid var(--divider-r); }
+
+    /* ── Parcel badge ─────────────────────────────────────────────── */
+    #parcel-badge {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      pointer-events: none;
+      background: rgba(26, 26, 20, 0.82);
+      border: 1px solid var(--fern);
+      padding: 3px 10px;
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      color: var(--fern);
+      letter-spacing: 0.8px;
+      display: none;
+    }
+
+    /* ── Swipe divider ────────────────────────────────────────────── */
+    #divider {
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--divider-l) 0%, var(--divider-r) 100%);
+      cursor: ew-resize;
+      z-index: 20;
+      transform: translateX(-50%);
+    }
+
+    #divider::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      filter: blur(6px);
+      opacity: 0.4;
+    }
+
+    #divider-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 36px;
+      height: 36px;
+      background: var(--moss);
+      border: 2px solid var(--fern);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--fern);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.6);
+      user-select: none;
+      letter-spacing: -2px;
+      padding-left: 1px;
+    }
+
+    #divider.dragging #divider-handle {
+      border-color: var(--amber);
+      color: var(--amber);
+      box-shadow: 0 0 16px rgba(200,146,42,0.4);
+    }
+
+    /* ── MapLibre overrides ───────────────────────────────────────── */
+    .maplibregl-ctrl-attrib {
+      background: rgba(26,26,20,0.75) !important;
+      color: var(--sage) !important;
+      font-size: 9px !important;
+      font-family: var(--font-mono) !important;
+    }
+
+    .maplibregl-ctrl-attrib a { color: var(--fern) !important; }
+    .maplibregl-ctrl-bottom-right { bottom: 4px !important; }
+
+    .maplibregl-ctrl-group {
+      background: var(--moss) !important;
+      border: 1px solid var(--lichen) !important;
+    }
+
+    .maplibregl-ctrl-group button {
+      background-color: transparent !important;
+    }
+
+    .maplibregl-ctrl-icon { filter: invert(0.7) sepia(0.3) hue-rotate(60deg); }
+
+    /* ── Loading overlay ──────────────────────────────────────────── */
+    #loading {
+      position: absolute;
+      inset: 0;
+      background: var(--bark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 50;
+      flex-direction: column;
+      gap: 12px;
+      transition: opacity 0.4s;
+    }
+
+    #loading.hidden { opacity: 0; pointer-events: none; }
+
+    #loading-text {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--sage);
+      letter-spacing: 1px;
+    }
+
+    .loading-bar {
+      width: 160px;
+      height: 3px;
+      background: var(--lichen);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--divider-l), var(--divider-r));
+      animation: load 1.2s ease-in-out infinite;
+      border-radius: 2px;
+    }
+
+    @keyframes load {
+      0%   { width: 0%;   margin-left: 0; }
+      50%  { width: 60%;  margin-left: 20%; }
+      100% { width: 0%;   margin-left: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Header ─────────────────────────────────────────────────── -->
+  <div id="header">
+    <div id="brand">
+      <span id="brand-title">VT Landscape Viewer</span>
+      <span id="brand-sub">MapLibre GL JS · VCGI</span>
+    </div>
+
+    <div id="controls">
+      <!-- Left layer selector -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">◀ Left</span>
+        <select id="sel-left" class="select-left"></select>
+      </div>
+
+      <!-- Parcel overlay toggle -->
+      <div id="parcel-toggle-wrap">
+        <span class="ctrl-label">Overlay</span>
+        <button id="parcel-btn">⬜ Parcels</button>
+      </div>
+
+      <!-- Right layer selector -->
+      <div class="ctrl-group">
+        <span class="ctrl-label">Right ▶</span>
+        <select id="sel-right" class="select-right"></select>
+      </div>
+    </div>
+
+    <!-- Search bar — lives in the header, right side -->
+    <div id="search-wrap">
+      <div style="position:relative; width:100%;">
+        <input id="search-input" type="text" placeholder="Search for a place…" autocomplete="off" />
+        <span id="search-icon">⌕</span>
+      </div>
+      <div id="search-results"></div>
+    </div>
+  </div>
+
+  <!-- ── Map area ────────────────────────────────────────────────── -->
+  <div id="map-wrap">
+    <div id="map-left"></div>
+    <div id="map-right"></div>
+
+    <!-- Side labels -->
+    <div id="label-left"  class="side-label">—</div>
+    <div id="label-right" class="side-label">—</div>
+
+    <!-- Parcel active badge -->
+    <div id="parcel-badge">PARCEL OVERLAY ACTIVE · landrecords.us</div>
+
+    <!-- Swipe divider -->
+    <div id="divider">
+      <div id="divider-handle">⇔</div>
+    </div>
+
+    <!-- Loading screen -->
+    <div id="loading">
+      <div id="loading-text">LOADING BASEMAP…</div>
+      <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  LAYER DEFINITIONS
+//  Vermont imagery layers served by VCGI (Vermont Center for
+//  Geographic Information) via ArcGIS ImageServer.
+//  The vcgi() helper builds the standard ESRI tile URL pattern.
+// ═══════════════════════════════════════════════════════════════════
+
+function vcgi(servicePath) {
+  return `${servicePath}/tile/{z}/{y}/{x}`;
+}
+
+const LAYERS = [
+  // ── LiDAR ────────────────────────────────────────────────────────
+  {
+    id:          "lidar_hillshade",
+    name:        "LiDAR — Hillshade",
+    group:       "LiDAR",
+    url:         vcgi("https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_LIDARHILLSHD_WM_CACHE_v1/ImageServer"),
+    attribution: "VCGI — LiDAR Hillshade",
+    // Stone walls, old roads, skid trails, terrain hidden under canopy
+  },
+
+  // ── Best Available Imagery (ArcGIS ImageServer) ───────────────────
+  {
+    id:          "ortho_clr",
+    name:        "Best Available — True Color",
+    group:       "Best Available",
+    url:         vcgi("https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_CLR_WM_CACHE/ImageServer"),
+    attribution: "VCGI — Best Available True Color Imagery",
+  },
+  {
+    id:          "ortho_cir",
+    name:        "Best Available — Color Infrared (CIR)",
+    group:       "Best Available",
+    url:         vcgi("https://maps.vcgi.vermont.gov/arcgis/rest/services/EGC_services/IMG_VCGI_CIR_WM_CACHE/ImageServer"),
+    attribution: "VCGI — Best Available Color Infrared Imagery",
+  },
+
+  // ── Historical Imagery (COG via TiTiler) ─────────────────────────
+  // All statewide COGs reprojected on-the-fly by TiTiler
+  {
+    id:          "imagery_2024",
+    name:        "Imagery — 2024 Leaf-Off (Color)",
+    group:       "Historical",
+    url:         "https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?bidx=1&bidx=2&bidx=3&url=" +
+                 encodeURIComponent("https://s3.us-east-2.amazonaws.com/vtopendata-prd/Imagery/STATEWIDE_2024_30cm_LeafOFF_4Band.tif"),
+    attribution: "VCGI — 2024 30cm Leaf-Off Imagery",
+    bounds:      [-73.44, 42.72, -71.46, 45.02],
+  },
+  {
+    id:          "imagery_2021_2022",
+    name:        "Imagery — 2021–2022 Leaf-Off (Color)",
+    group:       "Historical",
+    url:         "https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?bidx=1&bidx=2&bidx=3&url=" +
+                 encodeURIComponent("https://s3.us-east-2.amazonaws.com/vtopendata-prd/Imagery/STATEWIDE_2021-2022_30cm_LeafOFF_4Band.tif"),
+    attribution: "VCGI — 2021–2022 30cm Leaf-Off Imagery",
+    bounds:      [-73.44, 42.72, -71.46, 45.02],
+  },
+  {
+    id:          "imagery_2011_2015",
+    name:        "Imagery — 2011–2015 Leaf-Off (Color)",
+    group:       "Historical",
+    url:         "https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?bidx=1&bidx=2&bidx=3&url=" +
+                 encodeURIComponent("https://s3.us-east-2.amazonaws.com/vtopendata-prd/Imagery/STATEWIDE_2011-2015_50cm_LeafOFF_4Band.tif"),
+    attribution: "VCGI — 2011–2015 50cm Leaf-Off Imagery",
+    bounds:      [-73.44, 42.72, -71.46, 45.02],
+  },
+  {
+    id:          "imagery_1974_1992",
+    name:        "Imagery — 1974–1992 Leaf-Off (B&W)",
+    group:       "Historical",
+    url:         "https://titiler.xyz/cog/tiles/WebMercatorQuad/{z}/{x}/{y}.png?url=" +
+                 encodeURIComponent("https://s3.us-east-2.amazonaws.com/vtopendata-prd/Imagery/STATEWIDE_1974-1992_100cm_LeafOFF_1Band.tif"),
+    attribution: "VCGI — 1974–1992 100cm Leaf-Off Imagery",
+    bounds:      [-73.44, 42.72, -71.46, 45.02],
+  },
+
+  // ── Basemaps ──────────────────────────────────────────────────────
+  {
+    id:          "osm",
+    name:        "OpenStreetMap (roads & trails)",
+    group:       "Basemap",
+    url:         "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+    attribution: "© OpenStreetMap contributors",
+  },
+];
+
+// Default selections (layer id strings)
+const DEFAULT_LEFT  = "imagery_1974_1992";
+const DEFAULT_RIGHT = "imagery_2024";
+
+// Study area: Montpelier, VT (state capital, center of Vermont)
+const CENTER = [-72.5754, 44.2601];
+const ZOOM   = 13;
+
+// Vermont parcel overlay — landrecords.us national parcel TMS (open, non-commercial).
+// Uses TMS tile scheme (Y axis flipped vs XYZ), tileSize 512, served as png8.
+const PARCEL_URL =
+  "https://api.landrecords.us/public/gwc/service/tms/1.0.0/" +
+  "public:parcel_us@EPSG:3857x2@png8/{z}/{x}/{y}.png8";
+
+  
+
+// ═══════════════════════════════════════════════════════════════════
+//  MAP INITIALISATION
+// ═══════════════════════════════════════════════════════════════════
+
+// An empty MapLibre style — we add all layers ourselves as raster sources
+const EMPTY_STYLE = {
+  version: 8,
+  sources: {},
+  layers:  [],
+  glyphs:  "https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf",
+};
+
+function makeMap(containerId) {
+  return new maplibregl.Map({
+    container:        containerId,
+    style:            EMPTY_STYLE,
+    center:           CENTER,
+    zoom:             ZOOM,
+    attributionControl: false,
+  });
+}
+
+const mapL = makeMap("map-left");
+const mapR = makeMap("map-right");
+
+// Navigation controls on the left map only (they're synced)
+mapL.addControl(new maplibregl.NavigationControl(), "top-left");
+mapL.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+mapR.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
+
+// ── Map sync ─────────────────────────────────────────────────────────
+// When one map moves, silently move the other to match
+let syncing = false;
+
+function syncTo(source, target) {
+  if (syncing) return;
+  syncing = true;
+  target.jumpTo({
+    center:  source.getCenter(),
+    zoom:    source.getZoom(),
+    bearing: source.getBearing(),
+    pitch:   source.getPitch(),
+  });
+  syncing = false;
+}
+
+mapL.on("move", () => syncTo(mapL, mapR));
+mapR.on("move", () => syncTo(mapR, mapL));
+
+// ═══════════════════════════════════════════════════════════════════
+//  SEARCH / GEOCODER
+//  Uses the free Nominatim API (OpenStreetMap geocoding).
+//  No API key required. Rate-limited to ~1 request/second — fine
+//  for manual user searches.
+// ═══════════════════════════════════════════════════════════════════
+
+const searchInput   = document.getElementById("search-input");
+const searchResults = document.getElementById("search-results");
+
+let searchTimer = null;
+
+searchInput.addEventListener("input", () => {
+  clearTimeout(searchTimer);
+  const q = searchInput.value.trim();
+
+  if (q.length < 3) {
+    searchResults.style.display = "none";
+    searchResults.innerHTML = "";
+    return;
+  }
+
+  // Debounce: wait 400ms after the user stops typing before hitting the API
+  searchTimer = setTimeout(() => geocode(q), 400);
+});
+
+async function geocode(query) {
+  try {
+    // Nominatim: free OpenStreetMap geocoding, no key needed
+    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&limit=5&countrycodes=us`;
+    const res  = await fetch(url, { headers: { "Accept-Language": "en" } });
+    const data = await res.json();
+
+    searchResults.innerHTML = "";
+
+    if (!data.length) {
+      const item = document.createElement("div");
+      item.className = "search-result-item";
+      item.textContent = "No results found";
+      item.style.color = "var(--sage)";
+      item.style.cursor = "default";
+      searchResults.appendChild(item);
+    } else {
+      data.forEach(place => {
+        const item = document.createElement("div");
+        item.className = "search-result-item";
+        item.textContent = place.display_name;
+        item.addEventListener("click", () => {
+          // Fly both maps to the selected location
+          const lng = parseFloat(place.lon);
+          const lat = parseFloat(place.lat);
+          mapL.flyTo({ center: [lng, lat], zoom: 14, duration: 1200 });
+          searchInput.value = place.display_name.split(",")[0];
+          searchResults.style.display = "none";
+        });
+        searchResults.appendChild(item);
+      });
+    }
+
+    searchResults.style.display = "block";
+  } catch (err) {
+    console.warn("Geocode error:", err);
+  }
+}
+
+// Close results when clicking elsewhere
+document.addEventListener("click", e => {
+  if (!document.getElementById("search-wrap").contains(e.target)) {
+    searchResults.style.display = "none";
+  }
+});
+
+// Allow pressing Enter to search immediately
+searchInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") {
+    clearTimeout(searchTimer);
+    geocode(searchInput.value.trim());
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════
+//  LAYER MANAGEMENT
+//  Each map (L and R) independently tracks its active imagery layer.
+//  Both share the same parcel overlay source/layer (added to each).
+// ═══════════════════════════════════════════════════════════════════
+
+// Look up a layer definition by id
+const layerById = id => LAYERS.find(l => l.id === id);
+
+// Build a unique MapLibre source id and layer id for a given layer + side
+const srcId  = (layerId, side) => `${layerId}__src_${side}`;
+const lyrId  = (layerId, side) => `${layerId}__lyr_${side}`;
+const parcelSrcId = side => `parcels__src_${side}`;
+const parcelLyrId = side => `parcels__lyr_${side}`;
+
+// Add a raster tile layer to one map
+function addLayerToMap(map, layerDef, side) {
+  const sid = srcId(layerDef.id, side);
+  const lid = lyrId(layerDef.id, side);
+
+  if (!map.getSource(sid)) {
+    const sourceDef = {
+      type:        "raster",
+      tiles:       [layerDef.url],
+      tileSize:    256,
+      attribution: layerDef.attribution || "",
+    };
+    if (layerDef.bounds) sourceDef.bounds = layerDef.bounds;
+    map.addSource(sid, sourceDef);
+  }
+
+  if (!map.getLayer(lid)) {
+    // Insert BELOW the parcel layer so parcels always appear on top
+    const beforeId = map.getLayer(parcelLyrId(side)) ? parcelLyrId(side) : undefined;
+    map.addLayer({ id: lid, type: "raster", source: sid }, beforeId);
+  }
+}
+
+// Remove a raster tile layer from one map
+function removeLayerFromMap(map, layerDef, side) {
+  const sid = srcId(layerDef.id, side);
+  const lid = lyrId(layerDef.id, side);
+  if (map.getLayer(lid))  map.removeLayer(lid);
+  if (map.getSource(sid)) map.removeSource(sid);
+}
+
+// Track current layer ids
+let activeLeft  = null;
+let activeRight = null;
+let mapsReady   = 0; // count of loaded maps (need both before anything)
+
+function onBothLoaded(callback) {
+  mapsReady++;
+  if (mapsReady === 2) callback();
+}
+
+function switchLayer(side, newLayerId) {
+  const map  = side === "L" ? mapL : mapR;
+  const prev = side === "L" ? activeLeft : activeRight;
+
+  // Remove old layer
+  if (prev) removeLayerFromMap(map, layerById(prev), side);
+
+  // Add new layer
+  const def = layerById(newLayerId);
+  addLayerToMap(map, def, side);
+
+  // Update label
+  document.getElementById(side === "L" ? "label-left" : "label-right")
+    .textContent = def.name;
+
+  // Update state
+  if (side === "L") activeLeft  = newLayerId;
+  else              activeRight = newLayerId;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  PARCEL OVERLAY
+//  Added to BOTH maps, toggled together
+// ═══════════════════════════════════════════════════════════════════
+
+let parcelsVisible = false;
+
+function addParcelLayer(map, side) {
+  const sid = parcelSrcId(side);
+  const lid = parcelLyrId(side);
+
+  if (!map.getSource(sid)) {
+    map.addSource(sid, {
+      type:        "raster",
+      scheme:      "tms",          // landrecords.us uses TMS (flipped Y axis)
+      tiles:       [PARCEL_URL],
+      tileSize:    512,            // source tiles are 512 px
+      attribution: "landrecords.us — National Parcel Layer (non-commercial)",
+    });
+  }
+  if (!map.getLayer(lid)) {
+    map.addLayer({
+      id:   lid,
+      type: "raster",
+      source: sid,
+      paint: { "raster-opacity": 0.7 },
+    });
+  }
+}
+
+function removeParcelLayer(map, side) {
+  const sid = parcelSrcId(side);
+  const lid = parcelLyrId(side);
+  if (map.getLayer(lid))  map.removeLayer(lid);
+  if (map.getSource(sid)) map.removeSource(sid);
+}
+
+function toggleParcels() {
+  parcelsVisible = !parcelsVisible;
+
+  const btn    = document.getElementById("parcel-btn");
+  const badge  = document.getElementById("parcel-badge");
+
+  if (parcelsVisible) {
+    addParcelLayer(mapL, "L");
+    addParcelLayer(mapR, "R");
+    btn.textContent = "✅ Parcels";
+    btn.classList.add("active");
+    badge.style.display = "block";
+  } else {
+    removeParcelLayer(mapL, "L");
+    removeParcelLayer(mapR, "R");
+    btn.textContent = "⬜ Parcels";
+    btn.classList.remove("active");
+    badge.style.display = "none";
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  DROPDOWNS
+// ═══════════════════════════════════════════════════════════════════
+
+function populateSelect(selectEl, defaultId) {
+  // Group layers by their group property
+  const groups = {};
+  LAYERS.forEach(l => {
+    if (!groups[l.group]) groups[l.group] = [];
+    groups[l.group].push(l);
+  });
+
+  Object.entries(groups).forEach(([groupName, layers]) => {
+    const og = document.createElement("optgroup");
+    og.label = groupName;
+    layers.forEach(l => {
+      const opt = new Option(l.name, l.id);
+      if (l.id === defaultId) opt.selected = true;
+      og.appendChild(opt);
+    });
+    selectEl.appendChild(og);
+  });
+}
+
+const selLeft  = document.getElementById("sel-left");
+const selRight = document.getElementById("sel-right");
+
+populateSelect(selLeft,  DEFAULT_LEFT);
+populateSelect(selRight, DEFAULT_RIGHT);
+
+selLeft.addEventListener("change",  e => switchLayer("L", e.target.value));
+selRight.addEventListener("change", e => switchLayer("R", e.target.value));
+
+document.getElementById("parcel-btn").addEventListener("click", toggleParcels);
+
+// ═══════════════════════════════════════════════════════════════════
+//  BOOT: wait for both maps to load, then set default layers
+// ═══════════════════════════════════════════════════════════════════
+
+function boot() {
+  switchLayer("L", DEFAULT_LEFT);
+  switchLayer("R", DEFAULT_RIGHT);
+  
+  // Turn parcels on automatically when the map loads
+  toggleParcels();
+
+  // Hide loading screen
+  const loading = document.getElementById("loading");
+  loading.classList.add("hidden");
+  setTimeout(() => loading.remove(), 500);
+}
+
+mapL.on("load", () => onBothLoaded(boot));
+mapR.on("load", () => onBothLoaded(boot));
+
+// ═══════════════════════════════════════════════════════════════════
+//  SWIPE / CLIP LOGIC
+//  Two full-screen maps, clipped by CSS clip-path at the divider.
+//  The divider line is a draggable absolutely-positioned element.
+// ═══════════════════════════════════════════════════════════════════
+
+const wrap     = document.getElementById("map-wrap");
+const divider  = document.getElementById("divider");
+const elLeft   = document.getElementById("map-left");
+const elRight  = document.getElementById("map-right");
+
+let swipeFrac = 0.5; // 0 = full right, 1 = full left
+let dragging  = false;
+
+function applySwipe(frac) {
+  const w  = wrap.offsetWidth;
+  const px = Math.round(frac * w);
+
+  divider.style.left = px + "px";
+  elLeft.style.clipPath  = `inset(0 ${w - px}px 0 0)`;
+  elRight.style.clipPath = `inset(0 0 0 ${px}px)`;
+
+  // MapLibre needs an explicit resize signal when its container clips
+  mapL.resize();
+  mapR.resize();
+}
+
+// Set initial position once layout is known
+window.addEventListener("load",   () => applySwipe(swipeFrac));
+window.addEventListener("resize", () => applySwipe(swipeFrac));
+
+// Mouse drag
+divider.addEventListener("mousedown", e => {
+  dragging = true;
+  divider.classList.add("dragging");
+  e.preventDefault();
+});
+
+window.addEventListener("mousemove", e => {
+  if (!dragging) return;
+  const rect = wrap.getBoundingClientRect();
+  swipeFrac = Math.max(0.02, Math.min(0.98, (e.clientX - rect.left) / rect.width));
+  applySwipe(swipeFrac);
+});
+
+window.addEventListener("mouseup", () => {
+  dragging = false;
+  divider.classList.remove("dragging");
+});
+
+// Touch drag (tablets in the field)
+divider.addEventListener("touchstart", e => {
+  dragging = true;
+  e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("touchmove", e => {
+  if (!dragging) return;
+  const rect = wrap.getBoundingClientRect();
+  swipeFrac = Math.max(0.02, Math.min(0.98,
+    (e.touches[0].clientX - rect.left) / rect.width));
+  applySwipe(swipeFrac);
+}, { passive: false });
+
+window.addEventListener("touchend", () => { dragging = false; });
+</script>
+</body>
+</html>
