@@ -10,20 +10,46 @@
   <style>
     body { margin: 0; padding: 0; }
     #map { width: 100vw; height: 100vh; }
-    #legend {
+
+    #legend-toggle {
       position: absolute;
       bottom: 30px;
+      right: 10px;
+      background: rgba(255,255,255,0.92);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+      color: #333;
+    }
+    #legend-toggle:hover { background: rgba(245,245,245,0.98); }
+
+    #legend {
+      position: absolute;
+      bottom: 72px;
       right: 10px;
       background: rgba(255,255,255,0.92);
       padding: 12px 16px;
       border-radius: 8px;
       font-family: sans-serif;
       font-size: 12px;
-      max-height: 80vh;
+      max-height: calc(100vh - 110px);
       overflow-y: auto;
       box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       line-height: 1.8;
+      display: none;
+      z-index: 10;
     }
+    #legend.visible { display: block; }
+
     #legend h4 { margin: 0 0 8px 0; font-size: 13px; }
     .legend-item { display: flex; align-items: center; gap: 8px; }
     .legend-swatch {
@@ -34,11 +60,28 @@
 </head>
 <body>
 <div id="map"></div>
+
 <div id="legend">
   <h4>Surface Management</h4>
 </div>
 
+<button id="legend-toggle" onclick="toggleLegend()">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+    <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+  </svg>
+  Legend
+</button>
+
 <script>
+  function toggleLegend() {
+    const legend = document.getElementById("legend");
+    const btn = document.getElementById("legend-toggle");
+    const isVisible = legend.classList.toggle("visible");
+    btn.style.background = isVisible ? "rgba(220,235,255,0.98)" : "rgba(255,255,255,0.92)";
+  }
+
   const protocol = new pmtiles.Protocol();
   maplibregl.addProtocol("pmtiles", protocol.tile.bind(protocol));
 
