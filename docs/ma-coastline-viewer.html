@@ -543,7 +543,7 @@ const DEFAULT_LEFT  = "ortho_1990s";
 const DEFAULT_RIGHT = "ortho_2023";
 
 // Study area: Lobsterville Beach Aquinnah, MA
-const CENTER = [-70.80114530623028, 41.35405623704238];
+const CENTER = [-70.79128467065298, 41.34977965366512];
 const ZOOM   = 15;
 
 // MassGIS parcel overlay — two options tried in order:
@@ -593,15 +593,10 @@ function makeMap(containerId) {
 const mapL = makeMap("map-left");
 const mapR = makeMap("map-right");
 
-//import MeasuresControl from 'maplibre-gl-measures';
-
 // Navigation controls on the left map only (they're synced)
 mapL.addControl(new maplibregl.NavigationControl(), "top-left");
-mapL.addControl(new MeasuresControl(), 'top-left');
 mapL.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
 mapR.addControl(new maplibregl.AttributionControl({ compact: true }), "bottom-right");
-
-
 
 // ── Map sync ─────────────────────────────────────────────────────────
 // When one map moves, silently move the other to match
@@ -953,10 +948,6 @@ window.addEventListener("touchmove", e => {
 }, { passive: false });
 
 window.addEventListener("touchend", () => { dragging = false; });
-</script>
-<script type="module">
-  import { MeasuresControl } from 'https://unpkg.com/maplibre-gl-measures@0.0.20/dist/maplibre-gl-measures.js';
-  mapL.addControl(new MeasuresControl(), 'top-left');
 </script>
 </body>
 </html>
