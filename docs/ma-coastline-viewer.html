@@ -545,8 +545,8 @@ const DEFAULT_RIGHT = "ortho_2023";
 // Study area: Lobsterville Beach Aquinnah, MA
 const CENTER = [-70.79128467065298, 41.34977965366512];
 const ZOOM   = 17;
-const PITCH = 40;
-const BEARING = 160;
+const PITCH = 50;
+const BEARING = 210;
 
 // MassGIS parcel overlay — two options tried in order:
 //
@@ -588,6 +588,8 @@ function makeMap(containerId) {
     style:            EMPTY_STYLE,
     center:           CENTER,
     zoom:             ZOOM,
+    pitch:            PITCH,
+    bearing:          210,
     attributionControl: false,
   });
 }
