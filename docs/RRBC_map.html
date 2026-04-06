@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    
+        <script>
+            L_NO_TOUCH = false;
+            L_DISABLE_3D = false;
+        </script>
+    
+    <style>html, body {width: 100%;height: 100%;margin: 0;padding: 0;}</style>
+    <style>#map {position:absolute;top:0;bottom:0;right:0;left:0;}</style>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_7cd738a5a28c44c1511691680b912463 {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+        
+    <script src="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet.fullscreen@3.0.0/Control.FullScreen.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.2/leaflet.draw.css"/>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_7cd738a5a28c44c1511691680b912463" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_7cd738a5a28c44c1511691680b912463 = L.map(
+                "map_7cd738a5a28c44c1511691680b912463",
+                {
+                    center: [20.0, 0.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 2,
+  "zoomControl": true,
+  "preferCanvas": false,
+  "drawExport": false,
+  "layersControl": true,
+}
+
+                }
+            );
+            L.control.scale().addTo(map_7cd738a5a28c44c1511691680b912463);
+
+            
+
+        
+    
+            var tile_layer_010958da86f670982f31c4b3642f2e87 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 24,
+  "maxNativeZoom": 24,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_010958da86f670982f31c4b3642f2e87.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+            L.control.fullscreen(
+                {
+  "position": "topleft",
+  "title": "Full Screen",
+  "titleCancel": "Exit Full Screen",
+  "forceSeparateButton": false,
+}
+            ).addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+            var options = {
+              position: "topleft",
+              draw: {},
+              edit: {},
+            }
+                // FeatureGroup is to store editable layers.
+                var drawnItems_draw_control_4b84e0bc2fa1cbe455c8bd63b4c6aea5 =
+                    new L.featureGroup().addTo(
+                        map_7cd738a5a28c44c1511691680b912463
+                    );
+
+            options.edit.featureGroup = drawnItems_draw_control_4b84e0bc2fa1cbe455c8bd63b4c6aea5;
+            var draw_control_4b84e0bc2fa1cbe455c8bd63b4c6aea5 = new L.Control.Draw(
+                options
+            ).addTo( map_7cd738a5a28c44c1511691680b912463 );
+            map_7cd738a5a28c44c1511691680b912463.on(L.Draw.Event.CREATED, function(e) {
+                var layer = e.layer,
+                    type = e.layerType;
+                var coords = JSON.stringify(layer.toGeoJSON());
+                layer.on('click', function() {
+                    alert(coords);
+                    console.log(coords);
+                });
+                drawnItems_draw_control_4b84e0bc2fa1cbe455c8bd63b4c6aea5.addLayer(layer);
+            });
+            map_7cd738a5a28c44c1511691680b912463.on('draw:created', function(e) {
+                drawnItems_draw_control_4b84e0bc2fa1cbe455c8bd63b4c6aea5.addLayer(e.layer);
+            });
+
+            
+        
+    
+
+            var geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47 = {
+  "collapsed": true,
+  "position": "topleft",
+  "defaultMarkGeocode": true,
+  "zoom": 11,
+  "provider": "nominatim",
+  "providerOptions": {
+},
+};
+
+            // note: geocoder name should start with lowercase
+            var geocoderName_geocoder_2eefdb1a338bb9205a4549138eeb4d47 = geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47["provider"];
+
+            var customGeocoder_geocoder_2eefdb1a338bb9205a4549138eeb4d47 = L.Control.Geocoder[ geocoderName_geocoder_2eefdb1a338bb9205a4549138eeb4d47 ](
+                geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47['providerOptions']
+            );
+            geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47["geocoder"] = customGeocoder_geocoder_2eefdb1a338bb9205a4549138eeb4d47;
+
+            L.Control.geocoder(
+                geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47
+            ).on('markgeocode', function(e) {
+                var zoom = geocoderOpts_geocoder_2eefdb1a338bb9205a4549138eeb4d47['zoom'] || map_7cd738a5a28c44c1511691680b912463.getZoom();
+                map_7cd738a5a28c44c1511691680b912463.setView(e.geocode.center, zoom);
+            }).addTo(map_7cd738a5a28c44c1511691680b912463);
+
+        
+    
+            map_7cd738a5a28c44c1511691680b912463.fitBounds(
+                [[20, 0], [20, 0]],
+                {"maxZoom": 2}
+            );
+        
+    
+            var tile_layer_c97de569a32111bb56a99fde7f1110e7 = L.tileLayer(
+                "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+                {
+  "minZoom": 0,
+  "maxZoom": 24,
+  "maxNativeZoom": 24,
+  "noWrap": false,
+  "attribution": "Esri",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_c97de569a32111bb56a99fde7f1110e7.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+        function geo_json_24edc9235ebf4ae684b78e93b324d437_styler(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#3388ff", "fillOpacity": 0, "opacity": 1, "weight": 2};
+            }
+        }
+        function geo_json_24edc9235ebf4ae684b78e93b324d437_highlighter(feature) {
+            switch(feature.id) {
+                default:
+                    return {"fillOpacity": 0, "weight": 4};
+            }
+        }
+
+        function geo_json_24edc9235ebf4ae684b78e93b324d437_onEachFeature(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    if(typeof e.target.setStyle === "function"){
+                            geo_json_24edc9235ebf4ae684b78e93b324d437.resetStyle(e.target);
+                    }
+                },
+                mouseover: function(e) {
+                    if(typeof e.target.setStyle === "function"){
+                        const highlightStyle = geo_json_24edc9235ebf4ae684b78e93b324d437_highlighter(e.target.feature)
+                        e.target.setStyle(highlightStyle);
+                    }
+                },
+            });
+        };
+        var geo_json_24edc9235ebf4ae684b78e93b324d437 = L.geoJson(null, {
+                onEachFeature: geo_json_24edc9235ebf4ae684b78e93b324d437_onEachFeature,
+            
+                style: geo_json_24edc9235ebf4ae684b78e93b324d437_styler,
+            ...{
+}
+        });
+
+        function geo_json_24edc9235ebf4ae684b78e93b324d437_add (data) {
+            geo_json_24edc9235ebf4ae684b78e93b324d437
+                .addData(data);
+        }
+            geo_json_24edc9235ebf4ae684b78e93b324d437_add({"bbox": [-122.6450647094817, 29.42186929349051, 97.7433155869178, 64.68910110903967], "features": [{"bbox": [-105.58920240470165, 41.31438376048556, -105.58920240470165, 41.31438376048556], "geometry": {"coordinates": [-105.58920240470165, 41.31438376048556], "type": "Point"}, "id": "0", "properties": {"City": "Laramie", "Country": "USA", "Name": "Kash", "address": "Laramie, Wyoming, USA", "latitude": 41.31438376048556, "longitude": -105.58920240470165, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.58959297044049, 41.31103298439752, -105.58959297044049, 41.31103298439752], "geometry": {"coordinates": [-105.58959297044049, 41.31103298439752], "type": "Point"}, "id": "1", "properties": {"City": "Laramie", "Country": "USA", "Name": "Haleigh", "address": "Laramie, Wyoming, USA", "latitude": 41.31103298439752, "longitude": -105.58959297044049, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59246666960225, 41.31523017919912, -105.59246666960225, 41.31523017919912], "geometry": {"coordinates": [-105.59246666960225, 41.31523017919912], "type": "Point"}, "id": "2", "properties": {"City": "Laramie", "Country": "USA", "Name": "Jake", "address": "Laramie, Wyoming, USA", "latitude": 41.31523017919912, "longitude": -105.59246666960225, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59051451159299, 41.3136178802906, -105.59051451159299, 41.3136178802906], "geometry": {"coordinates": [-105.59051451159299, 41.3136178802906], "type": "Point"}, "id": "3", "properties": {"City": "Laramie", "Country": "USA", "Name": "Ali", "address": "Laramie, Wyoming, USA", "latitude": 41.3136178802906, "longitude": -105.59051451159299, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.50103502031087, 44.28657677347888, -105.50103502031087, 44.28657677347888], "geometry": {"coordinates": [-105.50103502031087, 44.28657677347888], "type": "Point"}, "id": "4", "properties": {"City": "Gillette", "Country": "USA", "Name": "Ms. Fry", "address": "Gillette, Wyoming, USA", "latitude": 44.28657677347888, "longitude": -105.50103502031087, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59028913398446, 41.31640042351637, -105.59028913398446, 41.31640042351637], "geometry": {"coordinates": [-105.59028913398446, 41.31640042351637], "type": "Point"}, "id": "5", "properties": {"City": "Laramie", "Country": "USA", "Name": "Mrs. Bowers", "address": "Laramie, Wyoming, USA", "latitude": 41.31640042351637, "longitude": -105.59028913398446, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.5959431567886, 41.31425559701991, -105.5959431567886, 41.31425559701991], "geometry": {"coordinates": [-105.5959431567886, 41.31425559701991], "type": "Point"}, "id": "6", "properties": {"City": "Laramie", "Country": "USA", "Name": "Deacon", "address": "Laramie, Wyoming, USA", "latitude": 41.31425559701991, "longitude": -105.5959431567886, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.5926295259783, 41.314504843052774, -105.5926295259783, 41.314504843052774], "geometry": {"coordinates": [-105.5926295259783, 41.314504843052774], "type": "Point"}, "id": "7", "properties": {"City": "Laramie", "Country": "USA", "Name": "Bryce", "address": "Laramie, Wyoming, USA", "latitude": 41.314504843052774, "longitude": -105.5926295259783, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-108.50065385826139, 45.78377683632676, -108.50065385826139, 45.78377683632676], "geometry": {"coordinates": [-108.50065385826139, 45.78377683632676], "type": "Point"}, "id": "8", "properties": {"City": "Billings", "Country": "USA", "Name": "Brody", "address": "Billings, Montana, USA", "latitude": 45.78377683632676, "longitude": -108.50065385826139, "state": "Montana"}, "type": "Feature"}, {"bbox": [-105.59184769180756, 41.31114805937896, -105.59184769180756, 41.31114805937896], "geometry": {"coordinates": [-105.59184769180756, 41.31114805937896], "type": "Point"}, "id": "9", "properties": {"City": "Laramie", "Country": "USA", "Name": "Nora", "address": "Laramie, Wyoming, USA", "latitude": 41.31114805937896, "longitude": -105.59184769180756, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59348898787668, 41.310352180242326, -105.59348898787668, 41.310352180242326], "geometry": {"coordinates": [-105.59348898787668, 41.310352180242326], "type": "Point"}, "id": "10", "properties": {"City": "Laramie", "Country": "USA", "Name": "Trip", "address": "Laramie, Wyoming, USA", "latitude": 41.310352180242326, "longitude": -105.59348898787668, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59534235811134, 41.31591184988849, -105.59534235811134, 41.31591184988849], "geometry": {"coordinates": [-105.59534235811134, 41.31591184988849], "type": "Point"}, "id": "11", "properties": {"City": "Laramie", "Country": "USA", "Name": "Styston", "address": "Laramie, Wyoming, USA", "latitude": 41.31591184988849, "longitude": -105.59534235811134, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-116.20485197032278, 43.618054951200804, -116.20485197032278, 43.618054951200804], "geometry": {"coordinates": [-116.20485197032278, 43.618054951200804], "type": "Point"}, "id": "12", "properties": {"City": "Boise", "Country": "USA", "Name": "Aimee", "address": "Boise, Idaho, USA", "latitude": 43.618054951200804, "longitude": -116.20485197032278, "state": "Idaho"}, "type": "Feature"}, {"bbox": [-105.59091115427823, 41.314871816132715, -105.59091115427823, 41.314871816132715], "geometry": {"coordinates": [-105.59091115427823, 41.314871816132715], "type": "Point"}, "id": "13", "properties": {"City": "Laramie", "Country": "USA", "Name": "Mia", "address": "Laramie, Wyoming, USA", "latitude": 41.314871816132715, "longitude": -105.59091115427823, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-106.39211717031463, 39.64323694198828, -106.39211717031463, 39.64323694198828], "geometry": {"coordinates": [-106.39211717031463, 39.64323694198828], "type": "Point"}, "id": "14", "properties": {"City": "Vail", "Country": "USA", "Name": "Ms.  Smith", "address": "Vail, Colorado, USA", "latitude": 39.64323694198828, "longitude": -106.39211717031463, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-105.58753639881624, 41.30891658721785, -105.58753639881624, 41.30891658721785], "geometry": {"coordinates": [-105.58753639881624, 41.30891658721785], "type": "Point"}, "id": "15", "properties": {"City": "Laramie", "Country": "USA", "Name": "Letty", "address": "Laramie, Wyoming, USA", "latitude": 41.30891658721785, "longitude": -105.58753639881624, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.590976988603, 41.31219004787016, -105.590976988603, 41.31219004787016], "geometry": {"coordinates": [-105.590976988603, 41.31219004787016], "type": "Point"}, "id": "16", "properties": {"City": "Laramie", "Country": "USA", "Name": "Paul", "address": "Laramie, Wyoming, USA", "latitude": 41.31219004787016, "longitude": -105.590976988603, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.82177730195465, 41.13561917256104, -104.82177730195465, 41.13561917256104], "geometry": {"coordinates": [-104.82177730195465, 41.13561917256104], "type": "Point"}, "id": "17", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "hayden", "address": "Cheyenne, Wyoming, USA", "latitude": 41.13561917256104, "longitude": -104.82177730195465, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.81933684508519, 41.14325731171992, -104.81933684508519, 41.14325731171992], "geometry": {"coordinates": [-104.81933684508519, 41.14325731171992], "type": "Point"}, "id": "18", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Aria", "address": "Cheyenne, Wyoming, USA", "latitude": 41.14325731171992, "longitude": -104.81933684508519, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59655956128971, 41.31296084399123, -105.59655956128971, 41.31296084399123], "geometry": {"coordinates": [-105.59655956128971, 41.31296084399123], "type": "Point"}, "id": "19", "properties": {"City": "Laramie", "Country": "USA", "Name": "Brendan", "address": "Laramie, Wyoming, USA", "latitude": 41.31296084399123, "longitude": -105.59655956128971, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-108.49148440786759, 45.79007657740085, -108.49148440786759, 45.79007657740085], "geometry": {"coordinates": [-108.49148440786759, 45.79007657740085], "type": "Point"}, "id": "20", "properties": {"City": "Billings", "Country": "USA", "Name": "Axel", "address": "Billings, Montana, USA", "latitude": 45.79007657740085, "longitude": -108.49148440786759, "state": "Montana"}, "type": "Feature"}, {"bbox": [-104.47763806563057, 41.2113038596813, -104.47763806563057, 41.2113038596813], "geometry": {"coordinates": [-104.47763806563057, 41.2113038596813], "type": "Point"}, "id": "21", "properties": {"City": "Hillsdale", "Country": "USA", "Name": "Gus", "address": "Hillsdale, Wyoming, USA", "latitude": 41.2113038596813, "longitude": -104.47763806563057, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-106.8194414477275, 44.79946068024395, -106.8194414477275, 44.79946068024395], "geometry": {"coordinates": [-106.8194414477275, 44.79946068024395], "type": "Point"}, "id": "22", "properties": {"City": "Sheridan", "Country": "USA", "Name": "Elli", "address": "Sheridan, Wyoming, USA", "latitude": 44.79946068024395, "longitude": -106.8194414477275, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59596030000078, 41.315575411213224, -105.59596030000078, 41.315575411213224], "geometry": {"coordinates": [-105.59596030000078, 41.315575411213224], "type": "Point"}, "id": "23", "properties": {"City": "Laramie", "Country": "USA", "Name": "Brody", "address": "Laramie, Wyoming, USA", "latitude": 41.315575411213224, "longitude": -105.59596030000078, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.83112741669163, 39.743294934970734, -104.83112741669163, 39.743294934970734], "geometry": {"coordinates": [-104.83112741669163, 39.743294934970734], "type": "Point"}, "id": "24", "properties": {"City": "Aurora", "Country": "USA", "Name": "Kristina", "address": "Aurora, Colorado, USA", "latitude": 39.743294934970734, "longitude": -104.83112741669163, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-105.59188053005646, 41.30859058707852, -105.59188053005646, 41.30859058707852], "geometry": {"coordinates": [-105.59188053005646, 41.30859058707852], "type": "Point"}, "id": "25", "properties": {"City": "Laramie", "Country": "USA", "Name": "Karter", "address": "Laramie, Wyoming, USA", "latitude": 41.30859058707852, "longitude": -105.59188053005646, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.58740933545026, 41.31131141003728, -105.58740933545026, 41.31131141003728], "geometry": {"coordinates": [-105.58740933545026, 41.31131141003728], "type": "Point"}, "id": "26", "properties": {"City": "Laramie", "Country": "USA", "Name": "Brydon", "address": "Laramie, Wyoming, USA", "latitude": 41.31131141003728, "longitude": -105.58740933545026, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-112.03555971947624, 46.58818053765787, -112.03555971947624, 46.58818053765787], "geometry": {"coordinates": [-112.03555971947624, 46.58818053765787], "type": "Point"}, "id": "27", "properties": {"City": "Helena", "Country": "USA", "Name": "Maison", "address": "Helena, Montana, USA", "latitude": 46.58818053765787, "longitude": -112.03555971947624, "state": "Montana"}, "type": "Feature"}, {"bbox": [-104.83125910598943, 39.73705399492067, -104.83125910598943, 39.73705399492067], "geometry": {"coordinates": [-104.83125910598943, 39.73705399492067], "type": "Point"}, "id": "28", "properties": {"City": "Aurora", "Country": "USA", "Name": "Diasy", "address": "Aurora, Colorado, USA", "latitude": 39.73705399492067, "longitude": -104.83125910598943, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-105.59411784336909, 41.31347468953243, -105.59411784336909, 41.31347468953243], "geometry": {"coordinates": [-105.59411784336909, 41.31347468953243], "type": "Point"}, "id": "29", "properties": {"City": "Laramie", "Country": "USA", "Name": "Isac", "address": "Laramie, Wyoming, USA", "latitude": 41.31347468953243, "longitude": -105.59411784336909, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59347191002658, 41.31409182155908, -105.59347191002658, 41.31409182155908], "geometry": {"coordinates": [-105.59347191002658, 41.31409182155908], "type": "Point"}, "id": "30", "properties": {"City": "Laramie", "Country": "USA", "Name": "Wyatt Biggs", "address": "Laramie, Wyoming, USA", "latitude": 41.31409182155908, "longitude": -105.59347191002658, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59158087597528, 41.31631929732435, -105.59158087597528, 41.31631929732435], "geometry": {"coordinates": [-105.59158087597528, 41.31631929732435], "type": "Point"}, "id": "31", "properties": {"City": "Laramie", "Country": "USA", "Name": "Lucy", "address": "Laramie, Wyoming, USA", "latitude": 41.31631929732435, "longitude": -105.59158087597528, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59239848539696, 41.30990245358139, -105.59239848539696, 41.30990245358139], "geometry": {"coordinates": [-105.59239848539696, 41.30990245358139], "type": "Point"}, "id": "32", "properties": {"City": "Laramie", "Country": "USA", "Name": "Jesslyn", "address": "Laramie, Wyoming, USA", "latitude": 41.30990245358139, "longitude": -105.59239848539696, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-107.2439598792012, 41.78949239706034, -107.2439598792012, 41.78949239706034], "geometry": {"coordinates": [-107.2439598792012, 41.78949239706034], "type": "Point"}, "id": "33", "properties": {"City": "Rawlins", "Country": "USA", "Name": "Mrs. Vallier", "address": "Rawlins, Wyoming, USA", "latitude": 41.78949239706034, "longitude": -107.2439598792012, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [7.367461019241944, 49.248350558112755, 7.367461019241944, 49.248350558112755], "geometry": {"coordinates": [7.367461019241944, 49.248350558112755], "type": "Point"}, "id": "34", "properties": {"City": "Zweibruecken", "Country": "Germany", "Name": "Mrs Monika", "address": "Zweibruecken, Germany", "latitude": 49.248350558112755, "longitude": 7.367461019241944, "state": ""}, "type": "Feature"}, {"bbox": [-107.2352143922816, 41.78768251359084, -107.2352143922816, 41.78768251359084], "geometry": {"coordinates": [-107.2352143922816, 41.78768251359084], "type": "Point"}, "id": "35", "properties": {"City": "Rawlins", "Country": "USA", "Name": "Ms. Smith", "address": "Rawlins, Wyoming, USA", "latitude": 41.78768251359084, "longitude": -107.2352143922816, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59538510911001, 41.30794341505336, -105.59538510911001, 41.30794341505336], "geometry": {"coordinates": [-105.59538510911001, 41.30794341505336], "type": "Point"}, "id": "36", "properties": {"City": "Laramie", "Country": "USA", "Name": "Charlott", "address": "Laramie, Wyoming, USA", "latitude": 41.30794341505336, "longitude": -105.59538510911001, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59124723856462, 41.31140124926226, -105.59124723856462, 41.31140124926226], "geometry": {"coordinates": [-105.59124723856462, 41.31140124926226], "type": "Point"}, "id": "37", "properties": {"City": "Laramie", "Country": "USA", "Name": "Tristen", "address": "Laramie, Wyoming, USA", "latitude": 41.31140124926226, "longitude": -105.59124723856462, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-98.49905474258865, 29.42186929349051, -98.49905474258865, 29.42186929349051], "geometry": {"coordinates": [-98.49905474258865, 29.42186929349051], "type": "Point"}, "id": "38", "properties": {"City": "San Antonio", "Country": "USA", "Name": "Leigh Ann", "address": "San Antonio, Texas, USA", "latitude": 29.42186929349051, "longitude": -98.49905474258865, "state": "Texas"}, "type": "Feature"}, {"bbox": [-98.4934180990696, 29.426298339946825, -98.4934180990696, 29.426298339946825], "geometry": {"coordinates": [-98.4934180990696, 29.426298339946825], "type": "Point"}, "id": "39", "properties": {"City": "San Antonio", "Country": "USA", "Name": "Mrs. Peterson", "address": "San Antonio, Texas, USA", "latitude": 29.426298339946825, "longitude": -98.4934180990696, "state": "Texas"}, "type": "Feature"}, {"bbox": [-88.5607871621616, 30.364051019188725, -88.5607871621616, 30.364051019188725], "geometry": {"coordinates": [-88.5607871621616, 30.364051019188725], "type": "Point"}, "id": "40", "properties": {"City": "pascagoula", "Country": "USA", "Name": "Zoey", "address": "pascagoula, Mississippi, USA", "latitude": 30.364051019188725, "longitude": -88.5607871621616, "state": "Mississippi"}, "type": "Feature"}, {"bbox": [-105.58951765385713, 41.313646851020025, -105.58951765385713, 41.313646851020025], "geometry": {"coordinates": [-105.58951765385713, 41.313646851020025], "type": "Point"}, "id": "41", "properties": {"City": "Laramie", "Country": "USA", "Name": "Partick", "address": "Laramie, Wyoming, USA", "latitude": 41.313646851020025, "longitude": -105.58951765385713, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-96.06265802508082, 41.31597486641382, -96.06265802508082, 41.31597486641382], "geometry": {"coordinates": [-96.06265802508082, 41.31597486641382], "type": "Point"}, "id": "42", "properties": {"City": "Omaha Nebraska", "Country": "USA", "Name": "Ty Vallier", "address": "Omaha Nebraska, Nebraska, USA", "latitude": 41.31597486641382, "longitude": -96.06265802508082, "state": "Nebraska"}, "type": "Feature"}, {"bbox": [-105.58762748154862, 41.31469184357497, -105.58762748154862, 41.31469184357497], "geometry": {"coordinates": [-105.58762748154862, 41.31469184357497], "type": "Point"}, "id": "43", "properties": {"City": "Laramie", "Country": "USA", "Name": "Skyler", "address": "Laramie, Wyoming, USA", "latitude": 41.31469184357497, "longitude": -105.58762748154862, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59448546009105, 41.3105189837903, -105.59448546009105, 41.3105189837903], "geometry": {"coordinates": [-105.59448546009105, 41.3105189837903], "type": "Point"}, "id": "44", "properties": {"City": "Laramie", "Country": "USA", "Name": "Oliver", "address": "Laramie, Wyoming, USA", "latitude": 41.3105189837903, "longitude": -105.59448546009105, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-114.31995087443823, 43.5175122810393, -114.31995087443823, 43.5175122810393], "geometry": {"coordinates": [-114.31995087443823, 43.5175122810393], "type": "Point"}, "id": "45", "properties": {"City": "Hailey", "Country": "USA", "Name": "Zander", "address": "Hailey, Idaho, USA", "latitude": 43.5175122810393, "longitude": -114.31995087443823, "state": "Idaho"}, "type": "Feature"}, {"bbox": [-116.02547757530608, 36.20600295503975, -116.02547757530608, 36.20600295503975], "geometry": {"coordinates": [-116.02547757530608, 36.20600295503975], "type": "Point"}, "id": "46", "properties": {"City": "Pahrump", "Country": "USA", "Name": "Griffen", "address": "Pahrump, Nevada, USA", "latitude": 36.20600295503975, "longitude": -116.02547757530608, "state": "Nevada"}, "type": "Feature"}, {"bbox": [-104.95401677716137, 42.05082152483609, -104.95401677716137, 42.05082152483609], "geometry": {"coordinates": [-104.95401677716137, 42.05082152483609], "type": "Point"}, "id": "47", "properties": {"City": "Wheatland", "Country": "USA", "Name": "olivia", "address": "Wheatland, Wyoming, USA", "latitude": 42.05082152483609, "longitude": -104.95401677716137, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-106.81897090256868, 44.79175278202475, -106.81897090256868, 44.79175278202475], "geometry": {"coordinates": [-106.81897090256868, 44.79175278202475], "type": "Point"}, "id": "48", "properties": {"City": "Sheridan", "Country": "USA", "Name": "matt myrick", "address": "Sheridan, Wyoming, USA", "latitude": 44.79175278202475, "longitude": -106.81897090256868, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59361621107178, 41.31451344377503, -105.59361621107178, 41.31451344377503], "geometry": {"coordinates": [-105.59361621107178, 41.31451344377503], "type": "Point"}, "id": "49", "properties": {"City": "Laramie", "Country": "USA", "Name": "Viv", "address": "Laramie, Wyoming, USA", "latitude": 41.31451344377503, "longitude": -105.59361621107178, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.5872586060493, 41.313292708565925, -105.5872586060493, 41.313292708565925], "geometry": {"coordinates": [-105.5872586060493, 41.313292708565925], "type": "Point"}, "id": "50", "properties": {"City": "Laramie", "Country": "USA", "Name": "Grey", "address": "Laramie, Wyoming, USA", "latitude": 41.313292708565925, "longitude": -105.5872586060493, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.9869528216186, 39.74128805378626, -104.9869528216186, 39.74128805378626], "geometry": {"coordinates": [-104.9869528216186, 39.74128805378626], "type": "Point"}, "id": "51", "properties": {"City": "Denver", "Country": "USA", "Name": "Rileigh", "address": "Denver, Colorado, USA", "latitude": 39.74128805378626, "longitude": -104.9869528216186, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-106.82211822870768, 44.797560990310224, -106.82211822870768, 44.797560990310224], "geometry": {"coordinates": [-106.82211822870768, 44.797560990310224], "type": "Point"}, "id": "52", "properties": {"City": "sheridan", "Country": "USA", "Name": "Dani", "address": "sheridan, Wyoming, USA", "latitude": 44.797560990310224, "longitude": -106.82211822870768, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-122.20834066429951, 47.98003111195953, -122.20834066429951, 47.98003111195953], "geometry": {"coordinates": [-122.20834066429951, 47.98003111195953], "type": "Point"}, "id": "53", "properties": {"City": "Everett", "Country": "USA", "Name": "Zian", "address": "Everett, Washington, USA", "latitude": 47.98003111195953, "longitude": -122.20834066429951, "state": "Washington"}, "type": "Feature"}, {"bbox": [-105.59514152182419, 41.30804216998128, -105.59514152182419, 41.30804216998128], "geometry": {"coordinates": [-105.59514152182419, 41.30804216998128], "type": "Point"}, "id": "54", "properties": {"City": "Laramie", "Country": "USA", "Name": "Vicrotia", "address": "Laramie, Wyoming, USA", "latitude": 41.30804216998128, "longitude": -105.59514152182419, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-106.82291782939997, 44.79643772961791, -106.82291782939997, 44.79643772961791], "geometry": {"coordinates": [-106.82291782939997, 44.79643772961791], "type": "Point"}, "id": "55", "properties": {"City": "Sheridan", "Country": "USA", "Name": "Mrs. Myrick", "address": "Sheridan, Wyoming, USA", "latitude": 44.79643772961791, "longitude": -106.82291782939997, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.58787082733745, 41.31229656106481, -105.58787082733745, 41.31229656106481], "geometry": {"coordinates": [-105.58787082733745, 41.31229656106481], "type": "Point"}, "id": "56", "properties": {"City": "Laramie", "Country": "USA", "Name": "Val", "address": "Laramie, Wyoming, USA", "latitude": 41.31229656106481, "longitude": -105.58787082733745, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.98609491980542, 39.857924588574164, -104.98609491980542, 39.857924588574164], "geometry": {"coordinates": [-104.98609491980542, 39.857924588574164], "type": "Point"}, "id": "57", "properties": {"City": "Thorton", "Country": "USA", "Name": "Ms. Allien", "address": "Thorton, Colorado, USA", "latitude": 39.857924588574164, "longitude": -104.98609491980542, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-105.58787967509122, 41.31299138320001, -105.58787967509122, 41.31299138320001], "geometry": {"coordinates": [-105.58787967509122, 41.31299138320001], "type": "Point"}, "id": "58", "properties": {"City": "Laramie", "Country": "USA", "Name": "Corban", "address": "Laramie, Wyoming, USA", "latitude": 41.31299138320001, "longitude": -105.58787967509122, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.98092753360302, 39.739772194006584, -104.98092753360302, 39.739772194006584], "geometry": {"coordinates": [-104.98092753360302, 39.739772194006584], "type": "Point"}, "id": "59", "properties": {"City": "Denver", "Country": "USA", "Name": "Zander", "address": "Denver, Colorado, USA", "latitude": 39.739772194006584, "longitude": -104.98092753360302, "state": "Colorado"}, "type": "Feature"}, {"bbox": [3.339557083603864, 46.562186671607456, 3.339557083603864, 46.562186671607456], "geometry": {"coordinates": [3.339557083603864, 46.562186671607456], "type": "Point"}, "id": "60", "properties": {"City": "Moulins sur Allier", "Country": "France", "Name": "Ms. V", "address": "Moulins sur Allier, France", "latitude": 46.562186671607456, "longitude": 3.3395570836038644, "state": null}, "type": "Feature"}, {"bbox": [-122.6450647094817, 48.29119540098063, -122.6450647094817, 48.29119540098063], "geometry": {"coordinates": [-122.6450647094817, 48.29119540098063], "type": "Point"}, "id": "61", "properties": {"City": "Oak Harbor", "Country": "USA", "Name": "Sam", "address": "Oak Harbor, Washington, USA", "latitude": 48.29119540098063, "longitude": -122.6450647094817, "state": "Washington"}, "type": "Feature"}, {"bbox": [-104.82937738736833, 39.73987827389232, -104.82937738736833, 39.73987827389232], "geometry": {"coordinates": [-104.82937738736833, 39.73987827389232], "type": "Point"}, "id": "62", "properties": {"City": "Aurora", "Country": "USA", "Name": "Baylea", "address": "Aurora, Colorado, USA", "latitude": 39.73987827389232, "longitude": -104.82937738736833, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-111.94357643331938, 40.605218986437244, -111.94357643331938, 40.605218986437244], "geometry": {"coordinates": [-111.94357643331938, 40.605218986437244], "type": "Point"}, "id": "63", "properties": {"City": "West Jordan", "Country": "USA", "Name": "Kira", "address": "West Jordan, Utah, USA", "latitude": 40.605218986437244, "longitude": -111.94357643331938, "state": "Utah"}, "type": "Feature"}, {"bbox": [-105.58931970388652, 41.315178230732684, -105.58931970388652, 41.315178230732684], "geometry": {"coordinates": [-105.58931970388652, 41.315178230732684], "type": "Point"}, "id": "64", "properties": {"City": "Laramie", "Country": "USA", "Name": "Rhagen", "address": "Laramie, Wyoming, USA", "latitude": 41.315178230732684, "longitude": -105.58931970388652, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.82262139484077, 41.137320394858655, -104.82262139484077, 41.137320394858655], "geometry": {"coordinates": [-104.82262139484077, 41.137320394858655], "type": "Point"}, "id": "65", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Nala", "address": "Cheyenne, Wyoming, USA", "latitude": 41.137320394858655, "longitude": -104.82262139484077, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.81587786849465, 41.13556402741689, -104.81587786849465, 41.13556402741689], "geometry": {"coordinates": [-104.81587786849465, 41.13556402741689], "type": "Point"}, "id": "66", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Isaiah", "address": "Cheyenne, Wyoming, USA", "latitude": 41.13556402741689, "longitude": -104.81587786849465, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-103.71142059424994, 41.853392538920225, -103.71142059424994, 41.853392538920225], "geometry": {"coordinates": [-103.71142059424994, 41.853392538920225], "type": "Point"}, "id": "67", "properties": {"City": "Scotts Bluff", "Country": "USA", "Name": "Ethon", "address": "Scotts Bluff, Nebraska, USA", "latitude": 41.853392538920225, "longitude": -103.71142059424994, "state": "Nebraska"}, "type": "Feature"}, {"bbox": [-103.47813542067588, 43.429581937577666, -103.47813542067588, 43.429581937577666], "geometry": {"coordinates": [-103.47813542067588, 43.429581937577666], "type": "Point"}, "id": "68", "properties": {"City": "Hot Springs", "Country": "USA", "Name": "Ms. Wallace", "address": "Hot Springs, South Dakota, USA", "latitude": 43.429581937577666, "longitude": -103.47813542067588, "state": "South Dakota"}, "type": "Feature"}, {"bbox": [-104.94941487327876, 42.056043165147265, -104.94941487327876, 42.056043165147265], "geometry": {"coordinates": [-104.94941487327876, 42.056043165147265], "type": "Point"}, "id": "69", "properties": {"City": "Wheatland", "Country": "USA", "Name": "Andrew", "address": "Wheatland, Wyoming, USA", "latitude": 42.056043165147265, "longitude": -104.94941487327876, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59525475683375, 41.312214521523416, -105.59525475683375, 41.312214521523416], "geometry": {"coordinates": [-105.59525475683375, 41.312214521523416], "type": "Point"}, "id": "70", "properties": {"City": "Laramie", "Country": "USA", "Name": "Havanna", "address": "Laramie, Wyoming, USA", "latitude": 41.312214521523416, "longitude": -105.59525475683375, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-83.29425411691842, 42.64176058209107, -83.29425411691842, 42.64176058209107], "geometry": {"coordinates": [-83.29425411691842, 42.64176058209107], "type": "Point"}, "id": "71", "properties": {"City": "Pontiac", "Country": "USA", "Name": "Bentlry", "address": "Pontiac, Michigan, USA", "latitude": 42.64176058209107, "longitude": -83.29425411691842, "state": "Michigan"}, "type": "Feature"}, {"bbox": [-105.07601747208479, 40.58882133540327, -105.07601747208479, 40.58882133540327], "geometry": {"coordinates": [-105.07601747208479, 40.58882133540327], "type": "Point"}, "id": "72", "properties": {"City": "Ft. Collins", "Country": "USA", "Name": "Layne", "address": "Ft. Collins, Colorado, USA", "latitude": 40.58882133540327, "longitude": -105.07601747208479, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-105.07123437959162, 40.3968250686144, -105.07123437959162, 40.3968250686144], "geometry": {"coordinates": [-105.07123437959162, 40.3968250686144], "type": "Point"}, "id": "73", "properties": {"City": "Loveland", "Country": "USA", "Name": "Sheridan", "address": "Loveland, Colorado, USA", "latitude": 40.3968250686144, "longitude": -105.07123437959162, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-117.37727365334285, 33.98563510384666, -117.37727365334285, 33.98563510384666], "geometry": {"coordinates": [-117.37727365334285, 33.98563510384666], "type": "Point"}, "id": "74", "properties": {"City": "Riverside", "Country": "USA", "Name": "Mrs. Perez", "address": "Riverside, California, USA", "latitude": 33.98563510384666, "longitude": -117.37727365334285, "state": "California"}, "type": "Feature"}, {"bbox": [-85.75663295161759, 38.24946472073134, -85.75663295161759, 38.24946472073134], "geometry": {"coordinates": [-85.75663295161759, 38.24946472073134], "type": "Point"}, "id": "75", "properties": {"City": "louisville", "Country": "USA", "Name": "Sierra", "address": "louisville, Kentucky, USA", "latitude": 38.24946472073134, "longitude": -85.75663295161759, "state": "Kentucky"}, "type": "Feature"}, {"bbox": [-104.8155277357394, 41.13588147860776, -104.8155277357394, 41.13588147860776], "geometry": {"coordinates": [-104.8155277357394, 41.13588147860776], "type": "Point"}, "id": "76", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Lillian", "address": "Cheyenne, Wyoming, USA", "latitude": 41.13588147860776, "longitude": -104.8155277357394, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59178018813797, 41.31386779350597, -105.59178018813797, 41.31386779350597], "geometry": {"coordinates": [-105.59178018813797, 41.31386779350597], "type": "Point"}, "id": "77", "properties": {"City": "laramie", "Country": "USA", "Name": "Charlee", "address": "laramie, Wyoming, USA", "latitude": 41.31386779350597, "longitude": -105.59178018813797, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-97.72590932497448, 30.264291172302514, -97.72590932497448, 30.264291172302514], "geometry": {"coordinates": [-97.72590932497448, 30.264291172302514], "type": "Point"}, "id": "78", "properties": {"City": "Huston", "Country": "USA", "Name": "Lincoln", "address": "Huston, Texas, USA", "latitude": 30.264291172302514, "longitude": -97.72590932497448, "state": "Texas"}, "type": "Feature"}, {"bbox": [-104.82510663712291, 41.13659371779033, -104.82510663712291, 41.13659371779033], "geometry": {"coordinates": [-104.82510663712291, 41.13659371779033], "type": "Point"}, "id": "79", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Hadley", "address": "Cheyenne, Wyoming, USA", "latitude": 41.13659371779033, "longitude": -104.82510663712291, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59449103970002, 41.311654647751034, -105.59449103970002, 41.311654647751034], "geometry": {"coordinates": [-105.59449103970002, 41.311654647751034], "type": "Point"}, "id": "80", "properties": {"City": "Laramie", "Country": "USA", "Name": "Cass", "address": "Laramie, Wyoming, USA", "latitude": 41.311654647751034, "longitude": -105.59449103970002, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-106.32881977782213, 42.84664222102713, -106.32881977782213, 42.84664222102713], "geometry": {"coordinates": [-106.32881977782213, 42.84664222102713], "type": "Point"}, "id": "81", "properties": {"City": "Casper", "Country": "USA", "Name": "Bryce", "address": "Casper, Wyoming, USA", "latitude": 42.84664222102713, "longitude": -106.32881977782213, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-95.67577941326387, 39.050974203750776, -95.67577941326387, 39.050974203750776], "geometry": {"coordinates": [-95.67577941326387, 39.050974203750776], "type": "Point"}, "id": "82", "properties": {"City": "Topeka", "Country": "USA", "Name": "Tess", "address": "Topeka, Kansas, USA", "latitude": 39.050974203750776, "longitude": -95.67577941326387, "state": "Kansas"}, "type": "Feature"}, {"bbox": [97.74152442504628, 64.68577516275575, 97.74152442504628, 64.68577516275575], "geometry": {"coordinates": [97.74152442504628, 64.68577516275575], "type": "Point"}, "id": "83", "properties": {"City": null, "Country": "Russia", "Name": "Mikael", "address": "Russia", "latitude": 64.68577516275575, "longitude": 97.74152442504628, "state": null}, "type": "Feature"}, {"bbox": [-108.75707737564358, 44.75088812089148, -108.75707737564358, 44.75088812089148], "geometry": {"coordinates": [-108.75707737564358, 44.75088812089148], "type": "Point"}, "id": "84", "properties": {"City": "Powell", "Country": "USA", "Name": "Bock", "address": "Powell, Wyoming, USA", "latitude": 44.75088812089148, "longitude": -108.75707737564358, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-102.9759270339078, 41.14617102593119, -102.9759270339078, 41.14617102593119], "geometry": {"coordinates": [-102.9759270339078, 41.14617102593119], "type": "Point"}, "id": "85", "properties": {"City": "Sidney", "Country": "USA", "Name": "Bennett", "address": "Sidney, Nebraska, USA", "latitude": 41.14617102593119, "longitude": -102.9759270339078, "state": "Nebraska"}, "type": "Feature"}, {"bbox": [-104.82324824348339, 41.13859912610553, -104.82324824348339, 41.13859912610553], "geometry": {"coordinates": [-104.82324824348339, 41.13859912610553], "type": "Point"}, "id": "86", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "tammie", "address": "Cheyenne, Wyoming, USA", "latitude": 41.13859912610553, "longitude": -104.82324824348339, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-109.21641315473818, 41.58193219919316, -109.21641315473818, 41.58193219919316], "geometry": {"coordinates": [-109.21641315473818, 41.58193219919316], "type": "Point"}, "id": "87", "properties": {"City": "Rock Springs", "Country": "USA", "Name": "anfinson", "address": "Rock Springs, Wyoming, USA", "latitude": 41.58193219919316, "longitude": -109.21641315473818, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-120.84420425996085, 37.4992757766455, -120.84420425996085, 37.4992757766455], "geometry": {"coordinates": [-120.84420425996085, 37.4992757766455], "type": "Point"}, "id": "88", "properties": {"City": "Turlock", "Country": "USA", "Name": "Zoey", "address": "Turlock, California, USA", "latitude": 37.4992757766455, "longitude": -120.84420425996085, "state": "California"}, "type": "Feature"}, {"bbox": [-104.82393542248442, 41.14406680690708, -104.82393542248442, 41.14406680690708], "geometry": {"coordinates": [-104.82393542248442, 41.14406680690708], "type": "Point"}, "id": "89", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Max", "address": "Cheyenne, Wyoming, USA", "latitude": 41.14406680690708, "longitude": -104.82393542248442, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-111.71538221806175, 39.42721096377348, -111.71538221806175, 39.42721096377348], "geometry": {"coordinates": [-111.71538221806175, 39.42721096377348], "type": "Point"}, "id": "90", "properties": {"City": "Utah", "Country": "USA", "Name": "Luke", "address": "Utah, USA", "latitude": 39.42721096377348, "longitude": -111.71538221806175, "state": null}, "type": "Feature"}, {"bbox": [97.7433155869178, 64.68910110903967, 97.7433155869178, 64.68910110903967], "geometry": {"coordinates": [97.7433155869178, 64.68910110903967], "type": "Point"}, "id": "91", "properties": {"City": null, "Country": "Russia", "Name": "Jessie", "address": "Russia", "latitude": 64.68910110903967, "longitude": 97.7433155869178, "state": null}, "type": "Feature"}, {"bbox": [-107.23526215954648, 39.472282001891585, -107.23526215954648, 39.472282001891585], "geometry": {"coordinates": [-107.23526215954648, 39.472282001891585], "type": "Point"}, "id": "92", "properties": {"City": "Colorado Spring", "Country": "USA", "Name": "Jaycie", "address": "Colorado Spring, Colorado, USA", "latitude": 39.472282001891585, "longitude": -107.23526215954648, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-111.65314875787236, 40.11450691502144, -111.65314875787236, 40.11450691502144], "geometry": {"coordinates": [-111.65314875787236, 40.11450691502144], "type": "Point"}, "id": "93", "properties": {"City": "Spanish Fork", "Country": "USA", "Name": "Porter", "address": "Spanish Fork, Utah, USA", "latitude": 40.11450691502144, "longitude": -111.65314875787236, "state": "Utah"}, "type": "Feature"}, {"bbox": [-106.32058176742953, 42.847841515618455, -106.32058176742953, 42.847841515618455], "geometry": {"coordinates": [-106.32058176742953, 42.847841515618455], "type": "Point"}, "id": "94", "properties": {"City": "Casper", "Country": "USA", "Name": "Joseph", "address": "Casper, Wyoming, USA", "latitude": 42.847841515618455, "longitude": -106.32058176742953, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-105.59392313773118, 41.30760810962154, -105.59392313773118, 41.30760810962154], "geometry": {"coordinates": [-105.59392313773118, 41.30760810962154], "type": "Point"}, "id": "95", "properties": {"City": "Laramie", "Country": "USA", "Name": "Stacey S.", "address": "Laramie, Wyoming, USA", "latitude": 41.30760810962154, "longitude": -105.59392313773118, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-108.75477191570688, 44.75689902396544, -108.75477191570688, 44.75689902396544], "geometry": {"coordinates": [-108.75477191570688, 44.75689902396544], "type": "Point"}, "id": "96", "properties": {"City": "Powell", "Country": "USA", "Name": "Brittney M", "address": "Powell, Wyoming, USA", "latitude": 44.75689902396544, "longitude": -108.75477191570688, "state": "Wyoming"}, "type": "Feature"}, {"bbox": [-104.83574540508614, 39.74006886289833, -104.83574540508614, 39.74006886289833], "geometry": {"coordinates": [-104.83574540508614, 39.74006886289833], "type": "Point"}, "id": "97", "properties": {"City": "Aurora", "Country": "USA", "Name": "Laurne", "address": "Aurora, Colorado, USA", "latitude": 39.74006886289833, "longitude": -104.83574540508614, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-78.66617231957673, 42.50571563364795, -78.66617231957673, 42.50571563364795], "geometry": {"coordinates": [-78.66617231957673, 42.50571563364795], "type": "Point"}, "id": "98", "properties": {"City": "Springville", "Country": "USA", "Name": "Bryan K", "address": "Springville, New York, USA", "latitude": 42.50571563364795, "longitude": -78.66617231957673, "state": "New York"}, "type": "Feature"}, {"bbox": [-105.61384414888319, 41.30681226624151, -105.61384414888319, 41.30681226624151], "geometry": {"coordinates": [-105.61384414888319, 41.30681226624151], "type": "Point"}, "id": "99", "properties": {"City": "Laramie", "Country": "USA", "Name": "Kristy K", "address": "Laramie, USA", "latitude": 41.30681226624151, "longitude": -105.61384414888319, "state": null}, "type": "Feature"}, {"bbox": [13.231896674037507, 46.06425539568942, 13.231896674037507, 46.06425539568942], "geometry": {"coordinates": [13.231896674037507, 46.06425539568942], "type": "Point"}, "id": "100", "properties": {"City": "Udine", "Country": "Italy", "Name": "Kim Winters", "address": "Udine, Italy", "latitude": 46.06425539568942, "longitude": 13.231896674037507, "state": null}, "type": "Feature"}, {"bbox": [-105.08060790402935, 40.58394592782939, -105.08060790402935, 40.58394592782939], "geometry": {"coordinates": [-105.08060790402935, 40.58394592782939], "type": "Point"}, "id": "101", "properties": {"City": "Ft. Collins", "Country": "USA", "Name": "Mrs. Nichols", "address": "Ft. Collins, Colorado, USA", "latitude": 40.58394592782939, "longitude": -105.08060790402935, "state": "Colorado"}, "type": "Feature"}, {"bbox": [-104.82105485680684, 41.14354714284092, -104.82105485680684, 41.14354714284092], "geometry": {"coordinates": [-104.82105485680684, 41.14354714284092], "type": "Point"}, "id": "102", "properties": {"City": "Cheyenne", "Country": "USA", "Name": "Mrs. McCarric", "address": "Cheyenne, Wyoming, USA", "latitude": 41.14354714284092, "longitude": -104.82105485680684, "state": "Wyoming"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+    geo_json_24edc9235ebf4ae684b78e93b324d437.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature=>typeof(feature)=='object' ? JSON.stringify(feature) : feature;
+    let fields = ["Name", "City", "state", "Country", "address", "latitude", "longitude"];
+    let aliases = ["Name", "City", "state", "Country", "address", "latitude", "longitude"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+            geo_json_24edc9235ebf4ae684b78e93b324d437.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+            map_7cd738a5a28c44c1511691680b912463.fitBounds(
+                [[29.42186929349051, -122.6450647094817], [64.68910110903967, 97.7433155869178]],
+                {}
+            );
+        
+    
+            var layer_control_378d0f2d5057b2866ace41321d69d1b6_layers = {
+                base_layers : {
+                    "openstreetmap" : tile_layer_010958da86f670982f31c4b3642f2e87,
+                },
+                overlays :  {
+                    "Esri.WorldStreetMap" : tile_layer_c97de569a32111bb56a99fde7f1110e7,
+                    "Birth Cities" : geo_json_24edc9235ebf4ae684b78e93b324d437,
+                },
+            };
+            let layer_control_378d0f2d5057b2866ace41321d69d1b6 = L.control.layers(
+                layer_control_378d0f2d5057b2866ace41321d69d1b6_layers.base_layers,
+                layer_control_378d0f2d5057b2866ace41321d69d1b6_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": true,
+  "autoZIndex": true,
+}
+            ).addTo(map_7cd738a5a28c44c1511691680b912463);
+
+        
+    
+            tile_layer_010958da86f670982f31c4b3642f2e87.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+            tile_layer_c97de569a32111bb56a99fde7f1110e7.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+    
+            geo_json_24edc9235ebf4ae684b78e93b324d437.addTo(map_7cd738a5a28c44c1511691680b912463);
+        
+</script>
+</html>
