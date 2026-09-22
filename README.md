@@ -16,6 +16,13 @@ Site for hosting open-source interactive web maps built with Python, Leafmap, an
 | **[WY Land Management Viewer](https://asivitskis.github.io/OpenMaps/wy-sma-viewer-simple.html)** | Hosted PMTiles from BLM to visualize land surface management agency |
 | **[WY Land Management Viewer 3D](https://asivitskis.github.io/OpenMaps/wy-sma-viewer-3d.html)** | Interactive aerial imagery and lidar comparison for coastline restoration analysis |
 | **[Part2](https://asivitskis.github.io/OpenMaps/Part2_BasicMap.html)** | Part 2 |
+| **[Part3](https://asivitskis.github.io/OpenMaps/Part3_MapControls.html)** | Part 3 |
+| **[Part4](https://asivitskis.github.io/OpenMaps/Part4_AddingGeometry.html)** | Part 4 |
+| **[Part5](https://asivitskis.github.io/OpenMaps/Part5_Clusters.html)** | Part 5 |
+| **[Part6](https://asivitskis.github.io/OpenMaps/Part6_PopUps.html)** | Part 6 |
+| **[Part7](https://asivitskis.github.io/OpenMaps/Part7_Raster.html)** | Part 7 |
+| **[Part8](https://asivitskis.github.io/OpenMaps/Part8_3D_Extrusions.html)** | Part 8 |
+| **[Part9](https://asivitskis.github.io/OpenMaps/Part9_3D_Terrain.html)** | Part 9 |
 
 
 ---
