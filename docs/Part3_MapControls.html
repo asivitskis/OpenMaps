@@ -26,7 +26,7 @@
         window.map = map;   // exposes map to the browser console for debugging
 
         map.on('load', function () {
-            map.addControl(new maplibregl.NavigationControl(), 'top-left')
+            map.addControl(new maplibregl.FullscreenControl(), 'top-left')
         });
         
     </script>
