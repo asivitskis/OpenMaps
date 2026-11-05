@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Riparian Buffer Explorer</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.css" />
+    <style>
+        body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
+        #map { position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+
+        #panel {
+            position: absolute; top: 10px; left: 10px; z-index: 1;
+            width: 270px; padding: 14px 16px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 6px; box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+            font-size: 14px; line-height: 1.4;
+        }
+        #panel h1 { margin: 0 0 6px; font-size: 18px; }
+        #panel p { margin: 0 0 12px; color: #444; }
+        #panel input[type=range] { width: 100%; }
+        #results { margin-top: 10px; padding-top: 8px; border-top: 1px solid #ccc; }
+        #results div { margin: 3px 0; }
+        #footer { margin-top: 10px; font-size: 11px; color: #777; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+
+    <div id="panel">
+        <h1 id="title"></h1>
+        <p id="question"></p>
+        <label for="slider"><strong>Buffer width:</strong> <span id="width-label"></span></label>
+        <input type="range" id="slider">
+        <div id="results"></div>
+        <div id="footer">Sample parcel and stream are fictional. Analysis runs in your browser with Turf.js.</div>
+    </div>
+
+    <script type="module">
+        import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.mjs';
+        import * as turf from 'https://esm.sh/@turf/turf@7.1.0';
+
+        // ------------------------------------------------------------------
+        // 1. CONFIG  (EDIT 1 and EDIT 2 happen here)
+        // ------------------------------------------------------------------
+        const CONFIG = {
+            // TODO (Edit 3): change the title and question to match your own idea
+            title: "Riparian Buffer Explorer",
+            question: "How much of this parcel would a streamside buffer protect?",
+
+            // TODO (Edit 2): change the slider range and starting value (in meters)
+            bufferMin: 0,
+            bufferMax: 200,
+            bufferStart: 30,
+            bufferStep: 5,
+
+            // TODO (Edit 1): change the three colors (any CSS color or hex code)
+            colors: {
+                parcel: "#c0392b",
+                stream: "#1f78b4",
+                buffer: "#2e8b57"
+            }
+        };
+
+        // ------------------------------------------------------------------
+        // 2. DATA  (inline GeoJSON, so there are no data files to load)
+        //    Remember: GeoJSON coordinates are [longitude, latitude].
+        // ------------------------------------------------------------------
+        const parcel = {
+            type: "Feature",
+            properties: { name: "Sample parcel" },
+            geometry: {
+                type: "Polygon",
+                coordinates: [[
+                    [
+                        -108.13577753843809,
+                        32.70653243309721
+                    ],
+                    [
+                        -108.10665328803749,
+                        32.70653243309721
+                    ],
+                    [
+                        -108.10665328803749,
+                        32.69111974989731
+                    ],
+                    [
+                        -108.13577753843809,
+                        32.69111974989731
+                    ],
+                    [
+                        -108.13577753843809,
+                        32.70653243309721
+                    ]
+                ]]
+            }
+        };
+
+        const stream = {
+            type: "Feature",
+            properties: { name: "Sample stream" },
+            geometry: {
+                type: "LineString",
+                coordinates: [
+                    [
+                        -108.1202406,
+                        32.7097638
+                    ],
+                    [
+                        -108.1189646,
+                        32.7074901
+                    ],
+                    [
+                        -108.117087,
+                        32.704458
+                    ],
+                    [
+                        -108.1165615,
+                        32.7030052
+                    ],
+                    [
+                        -108.1153605,
+                        32.699582
+                    ],
+                    [
+                        -108.1152855,
+                        32.6983186
+                    ],
+                    [
+                        -108.1137092,
+                        32.6926359
+                    ],
+                    [
+                        -108.1133339,
+                        32.6921937
+                    ],
+                    [
+                        -108.1128084,
+                        32.6908671
+                    ],
+                    [
+                        -108.112358,
+                        32.6894773
+                    ],
+                    [
+                        -108.1116825,
+                        32.6889087
+                    ],
+                    [
+                        -108.1113072,
+                        32.6877716
+                    ],
+                    [
+                        -108.1113072,
+                        32.6864449
+                    ],
+                    [
+                        -108.1110069,
+                        32.6844232
+                    ],
+                    [
+                        -108.1107067,
+                        32.6834124
+                    ]
+                ]
+            }
+        };
+
+
+        const EMPTY = turf.featureCollection([]);
+        const SQ_METERS_PER_ACRE = 4046.86;
+        const parcelAcres = turf.area(parcel) / SQ_METERS_PER_ACRE;
+
+        // ------------------------------------------------------------------
+        // 3. ANALYSIS  (Turf: GeoJSON in, GeoJSON out)
+        // ------------------------------------------------------------------
+        function runAnalysis(widthMeters) {
+            // A buffer of 0 m has no area, so skip it
+            if (widthMeters <= 0) return { fullBuffer: null, clipped: null };
+
+            // Step 1: grow the stream line into a polygon
+            const fullBuffer = turf.buffer(stream, widthMeters, { units: "meters" });
+
+            // Step 2: keep only the part that falls inside the parcel.
+            // Turf v7: intersect takes ONE featureCollection. It returns null if nothing overlaps.
+            const clipped = turf.intersect(turf.featureCollection([parcel, fullBuffer]));
+
+            return { fullBuffer, clipped };
+        }
+
+        // ------------------------------------------------------------------
+        // 4. MAP
+        // ------------------------------------------------------------------
+        const map = new maplibregl.Map({
+            container: "map",
+            style: "https://tiles.openfreemap.org/styles/liberty",
+            bounds: turf.bbox(parcel),
+            fitBoundsOptions: { padding: 60 }
+        });
+        window.map = map; // lets you poke at the map from the browser console
+        map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+        map.on("load", () => {
+            map.addSource("parcel", { type: "geojson", data: parcel });
+            map.addSource("stream", { type: "geojson", data: stream });
+            map.addSource("buffer-full", { type: "geojson", data: EMPTY });
+            map.addSource("buffer-clipped", { type: "geojson", data: EMPTY });
+
+            map.addLayer({
+                id: "parcel-fill", type: "fill", source: "parcel",
+                paint: { "fill-color": CONFIG.colors.parcel, "fill-opacity": 0.08 }
+            });
+            map.addLayer({
+                id: "buffer-clipped-fill", type: "fill", source: "buffer-clipped",
+                paint: { "fill-color": CONFIG.colors.buffer, "fill-opacity": 0.55 }
+            });
+            map.addLayer({
+                id: "buffer-full-line", type: "line", source: "buffer-full",
+                paint: { "line-color": CONFIG.colors.buffer, "line-width": 1.5, "line-dasharray": [2, 2] }
+            });
+            map.addLayer({
+                id: "parcel-line", type: "line", source: "parcel",
+                paint: { "line-color": CONFIG.colors.parcel, "line-width": 2.5 }
+            });
+            map.addLayer({
+                id: "stream-line", type: "line", source: "stream",
+                paint: { "line-color": CONFIG.colors.stream, "line-width": 3 }
+            });
+
+            update(); // draw the starting buffer
+        });
+
+        // ------------------------------------------------------------------
+        // 5. PAGE + update()  (runs at start and every time the slider moves)
+        // ------------------------------------------------------------------
+        const slider = document.getElementById("slider");
+        slider.min = CONFIG.bufferMin;
+        slider.max = CONFIG.bufferMax;
+        slider.step = CONFIG.bufferStep;
+        slider.value = CONFIG.bufferStart;
+
+        document.getElementById("title").textContent = CONFIG.title;
+        document.getElementById("question").textContent = CONFIG.question;
+        document.title = CONFIG.title;
+
+        function update() {
+            const width = Number(slider.value);
+            const { fullBuffer, clipped } = runAnalysis(width);
+
+            // Send the new results to the map
+            map.getSource("buffer-full").setData(fullBuffer || EMPTY);
+            map.getSource("buffer-clipped").setData(clipped || EMPTY);
+
+            // Measure the result
+            const acres = clipped ? turf.area(clipped) / SQ_METERS_PER_ACRE : 0;
+
+            // Update the text
+            document.getElementById("width-label").textContent = width + " m";
+            document.getElementById("results").innerHTML = `
+                <div>Buffer inside parcel: <strong>${acres.toFixed(2)} acres</strong></div>
+                <div>Whole parcel: ${parcelAcres.toFixed(2)} acres</div>
+                <!-- TODO (Edit 3): add a line for "% of parcel".
+                     Hint: percent = (acres / parcelAcres) * 100 -->
+            `;
+        }
+
+        slider.addEventListener("input", update);
+    </script>
+</body>
+</html>

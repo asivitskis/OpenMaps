@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Buffer a point</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.css" />
+    <style>
+        html,
+        body,
+        #map {
+            height: 100%;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+    <script type="module">
+        import * as maplibregl from 'https://unpkg.com/maplibre-gl@6.16.0/dist/maplibre-gl.mjs';
+
+        const point = turf.point([-108.2833, 32.7764]);
+        const buffered = turf.buffer(point, 50, { units: 'kilometers' });
+
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://tiles.openfreemap.org/styles/bright',
+            bounds: turf.bbox(buffered),
+            fitBoundsOptions: { padding: 40 }
+        });
+
+        map.on('load', () => {
+            map.addSource('buffer', { type: 'geojson', data: buffered });
+            map.addSource('point', { type: 'geojson', data: point });
+            map.addLayer({
+                id: 'buffer', type: 'fill', source: 'buffer',
+                paint: { 'fill-color': '#d62828', 'fill-opacity': 0.2 }
+            });
+            map.addLayer({
+                id: 'point', type: 'circle', source: 'point',
+                paint: { 'circle-radius': 5, 'circle-color': '#000' }
+            });
+        });
+    </script>
+</body>
+
+</html>
